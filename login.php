@@ -9,17 +9,24 @@
     if($result->num_rows>0){
         $row = $result->fetch_assoc();
         $role = $row['role'];
+        $pass = $row['password'];
 
-        if($role == 'admin'){
+        if($password===$pass){
+            if($role == 'admin'){
             Header("Location: admin.php");
 
-        }
-        else if($role == 'cashier'){
+            }
+             else if($role == 'cashier'){
             Header("Location: cashier.php");
+            }
+            else{
+            echo"Role not Found";
+            }
         }
         else{
-            echo"Role not Found";
+            echo"Wrong Password";
         }
+        
         
     }else{
         echo"Login Failed";
