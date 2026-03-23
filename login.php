@@ -13,7 +13,7 @@
 
         if($password===$pass){
             if($role == 'admin'){
-            Header("Location: admin.php");
+            Header("Location: admin/admin.php");
 
             }
             else if($role == 'cashier'){

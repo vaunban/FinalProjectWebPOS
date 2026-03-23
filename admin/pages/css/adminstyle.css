@@ -1,0 +1,38 @@
+body{
+    margin: 0;
+    padding: 0;
+    display: flex;
+    font-family: Arial, sans-serif;
+}
+.sidebar{
+    background-color: rgb(131, 175, 127);
+    height: 100vh;
+    position: sticky;
+    width: 220px;
+    top: 0;
+}
+.sidebar-header{
+    text-align: center;
+    padding: 10px;
+    color: white;
+}
+.sidebar-header h2 a{
+    text-decoration: none;
+    color: white;
+}
+.sidebar-links{
+    list-style: none;
+    padding: 0;
+}
+.sidebar-links li a{
+    display: block;
+    padding: 15px 20px;
+    text-decoration: none;
+    color: white;
+}
+.sidebar-links li a:hover{
+    background-color: rgb(77, 104, 75);
+}
+.mainshift{
+    padding: 20px;
+}
