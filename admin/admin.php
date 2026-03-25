@@ -16,6 +16,7 @@
                     <li><a href="pages/stockmanagement.php">Stock Management</a></li>
                     <li><a href="pages/customers.php">Customers</a></li>
                     <li><a href="pages/accounts.php">Accounts</a></li>
+                    <li><a href="../index.php">Log Out</a></li>
                 </ul>
         </div>
 
