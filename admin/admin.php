@@ -13,7 +13,7 @@
             </div>
                 <ul class="sidebar-links">
                     <li><a href="pages/dashboard.php">Dashboard</a></li>
-                    <li><a href="pages/stockmanagement.php">Stock Management</a></li>
+                    <li><a href="pages/inventory.php">Inventory</a></li>
                     <li><a href="pages/customers.php">Customers</a></li>
                     <li><a href="pages/accounts.php">Accounts</a></li>
                     <li><a href="../index.php">Log Out</a></li>
