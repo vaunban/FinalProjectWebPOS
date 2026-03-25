@@ -3,32 +3,33 @@
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    $sql = "SELECT * FROM users WHERE username = '$username'";
-    $result = $conn->query($sql);
+    $stmt = $conn->prepare("SELECT role, password FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    if($result->num_rows>0){
+    if($result->num_rows > 0){
         $row = $result->fetch_assoc();
         $role = $row['role'];
         $pass = $row['password'];
 
-        if($password===$pass){
+        if($password === $pass){
             if($role == 'admin'){
-            Header("Location: admin/admin.php");
-
+                Header("Location: admin/admin.php");
             }
             else if($role == 'cashier'){
-            Header("Location: cashier.php");
+                Header("Location: cashier.php");
             }
             else{
-            echo"Role not Found";
+                echo"Role not Found";
             }
         }
         else{
             echo"Wrong Password";
         }
-        
-        
-    }else{
+    }
+    else{
         echo"Login Failed";
     }
+    $stmt->close();
 ?>
