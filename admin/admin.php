@@ -9,7 +9,7 @@
 <body>
         <div class="sidebar">
             <div class="sidebar-header">
-                <h2><a href="admin.php">Admin</a></h1>
+                <h2><a href="admin.php">MERKADO</a></h1>
             </div>
                 <ul class="sidebar-links">
                     <li><a href="pages/dashboard.php">Dashboard</a></li>
