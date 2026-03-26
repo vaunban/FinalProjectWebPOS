@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="pages/css/adminstyle.css">
 </head>
 <body>
-    
         <div class="sidebar">
             <div class="sidebar-header">
                 <h2><a href="admin.php">MERKADO</a></h1>
