@@ -18,7 +18,7 @@
                 Header("Location: admin/admin.php");
             }
             else if($role == 'cashier'){
-                Header("Location: cashier.php");
+                Header("Location: cashier/cashier.php");
             }
             else{
                 echo"Role not Found";
