@@ -1,16 +1,16 @@
 
-const editForm = document.getElementById("editForm");
-const openEdit = document.getElementById("openEdit");
-const saveEdit = document.getElementById("saveEdit");
+const addStock = document.getElementById("addStockForm");
+const openAddStock = document.getElementById("openAddStock");
+const saveAddStock = document.getElementById("saveAddStock");
 const closeX = document.querySelector(".close-btn");
 
-openEdit.onclick = function() {
-  editForm.style.display = "block";
+openAddStock.onclick = function() {
+  addStock.style.display = "block";
 }
 
-saveEdit.onclick = function() {
-    editForm.style.display = "none";
+saveAddStock.onclick = function() {
+    addStock.style.display = "none";
 }
 closeX.onclick = function() {
-  editForm.style.display = "none";
+  addStock.style.display = "none";
 }
