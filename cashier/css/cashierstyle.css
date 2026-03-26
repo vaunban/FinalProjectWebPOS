@@ -60,7 +60,7 @@ body {
 }
 
 .left-panel {
-    background-image: url('../images/bg.png');
+    background-image: url('../../images/bg.png');
     background-size: cover;
     background-repeat: no-repeat;
     background-color: rgba(117, 132, 85, 0.2);
