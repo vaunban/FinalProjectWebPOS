@@ -7,10 +7,10 @@ if ($conn->query($sql) === TRUE) {
     if($stock_quantity < 1) {
        echo "Please add atleast 1 stock.";
     } else {
-    echo header("Location: inventory.php");
+    echo header("Location: /admin/pages/inventory.php");
     }
 } else {
     echo "Error updating stock: " . $conn->error;
-    echo "<a href='inventory.php'>Go back to Inventory</a>";
+    echo "<a href='/admin/pages/inventory.php'>Go back to Inventory</a>";
 }
 ?>
