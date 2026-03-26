@@ -24,7 +24,7 @@ if($_SESSION['role'] != 'admin'){
 
         <div class="sidebar">
             <div class="sidebar-header">
-                <h2><a href="../admin.php">MERKADO</a></h1>
+                <h2><a href="../admin.php">MERKADO</a></h2>
             </div>
                 <ul class="sidebar-links">
                     <li><a href="dashboard.php">Dashboard</a></li>
@@ -37,7 +37,47 @@ if($_SESSION['role'] != 'admin'){
 
         <div class="mainshift">
             <h1>Welcome to Account Page</h1>
-            <p>what what what what what what</p>
+            
+            <table border = 1>
+                <tr>
+                    <th> USERS ID </th>
+                    <th> NAME </th>
+                    <th> USERNAME </th>
+                    <th> ROLE </th>
+                    <th> STATUS </th>
+                    <th> ACTIONS </th>
+                </tr>
+
+                <?php
+                include (__DIR__ . '/../..//connect.php');
+
+                $sql = "SELECT * FROM users";
+                $result = $conn->query($sql);
+                    while ($row = $result->fetch_assoc())
+                    {
+                    echo "<tr>";
+                    echo "<td>" . $row['id'] . "</td>";
+                    echo "<td> name </td>";
+                    echo "<td>" . $row['username'] . "</td>";
+                    echo "<td>" . $row['role'] . "</td>";
+                    echo "<td> status </td>";
+                    echo"<td> Edit | Delete </td>";
+                    echo "</tr>";
+                    }
+                ?>
+            </table>
+
+            <button> + Add User </button>
+
+            <form method = "GET">
+                <input type="text" id="name" name="search" placeholder="Search by Name"><br>
+
+                <select name = "role">
+                    <option value = "" hidden selected > Filter: Role</option>
+                    <option value = "admin"> Admin </option>
+                    <option value = "cashier"> Cashier </option>
+                </select>
+            </form>
         </div>
 </body>
 </html>

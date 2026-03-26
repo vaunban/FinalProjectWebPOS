@@ -30,6 +30,18 @@ if(!isset($_SESSION['username'])){
                 <input type="text" name="query" placeholder="Search items..." aria-label="Search items" autocomplete="off">
                 <button type="submit">Search</button>
             </form>
+            
+                    <div class="category-section">
+                        <div class="category-buttons">
+                                <button class="category-btn" data-category="meat">Meat</button>
+                                <button class="category-btn" data-category="beverage">Beverage</button>
+                                <button class="category-btn" data-category="vegetables">Vegetables</button>
+                                <button class="category-btn" data-category="fruits">Fruits</button>
+                                <button class="category-btn" data-category="dairy">Dairy</button>
+                                <button class="category-btn" data-category="snacks">Snacks</button>
+                        </div>
+                    </div>
+
             <p>Panel for items, cart, or controls.</p>
         </section>
         <section class="right-panel">
