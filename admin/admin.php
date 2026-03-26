@@ -6,18 +6,8 @@
     <title>Document</title>
     <link rel="stylesheet" href="pages/css/adminstyle.css">
 </head>
-<?php
-
-?>
 <body>
-<?php
-session_start();
-if (!isset($_SESSION['username'])) {
-        header("Location:/../..//FinalProjectWebPOS");
-
-    die();
-}
-?>
+    
         <div class="sidebar">
             <div class="sidebar-header">
                 <h2><a href="admin.php">MERKADO</a></h1>

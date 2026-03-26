@@ -7,14 +7,7 @@
     <link rel="stylesheet" href="css/cashierstyle.css">
 </head>
 <body>
-    <?php
-session_start();
-if (!isset($_SESSION['username'])) {
-        header("Location:/../..//FinalProjectWebPOS");
 
-    die();
-}
-?>
     <nav class="navbar">
         <div class="logo">MERKADO</div>
         <div class="navbaritems">

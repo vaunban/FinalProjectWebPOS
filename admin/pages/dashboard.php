@@ -7,14 +7,7 @@
     <link rel="stylesheet" href="css/dashboardstyle.css">
 </head>
 <body>
-<?php
-session_start();
-if (!isset($_SESSION['username'])) {
-        header("Location:/../..//FinalProjectWebPOS");
 
-    die();
-}
-?>
     <div class="sidebar">
             <div class="sidebar-header">
                 <h2><a href="../admin.php">MERKADO</a></h1>
