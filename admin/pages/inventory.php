@@ -41,7 +41,7 @@ if($_SESSION['role'] != 'admin'){
             <p>what what what what what what</p>
         </div>
         <div>
-            <?php
+           <?php
             include (__DIR__ . '/../..//connect.php');
             $sql = "SELECT p.name AS product_name,p.id,p.price,p.stock_quantity,c.name AS category_name
             FROM products p
@@ -50,7 +50,13 @@ if($_SESSION['role'] != 'admin'){
             $result = $conn->query($sql);
              if($result->num_rows >0) {
                 echo "<table border = 1>";
-                echo "<tr><th>ID</th><th>Product Name</th><th>Price</th><th>Quantity</th><th>Category</th></tr>";
+                echo "<tr><th>ID</th>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Category</th>
+                <th>Action</th>
+                </tr>";
                 while ($row = $result->fetch_assoc()) {
                     echo "<tr>";
                     echo "<td>" . $row['id'] . "</td>";
@@ -67,13 +73,16 @@ if($_SESSION['role'] != 'admin'){
             ?>
         </div>
         <div>
-            <button id="openEdit">Edit Product</button>
-                <div id="editForm" class="form">
-                    <div class="form-content">
+            <button id="openAddStock">Add Stock</button>
+                <div id="addStockForm" class="AddStock-form">
+                    <div class="AddStock-form-content">
                     <span class="close-btn">&times;</span>
-                    <h2>yeayea</h2>
-                    <p>u suck</p>
-                    <button id="saveEdit">Save Changes</button>
+                    <h2>Add Stocks</h2>
+                    <form action="addStock.php" method="POST">
+                        <input type="text" name="id" id="productId"><br>
+                        <label for="stock_quantity">Stock Quantity:</label><br>
+                        <input type="number" name="stock_quantity" id="stock_quantity" required><br>
+                    <button id="saveAddStock">Save Changes</button>
                     </div>
 </div>
         </div>
