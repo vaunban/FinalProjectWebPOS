@@ -1,9 +1,10 @@
 <?php
+session_start();
     include("connect.php");
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    $stmt = $conn->prepare("SELECT role, password FROM users WHERE username = ?");
+    $stmt = $conn->prepare("SELECT username,id,role, password FROM users WHERE username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -12,15 +13,21 @@
         $row = $result->fetch_assoc();
         $role = $row['role'];
         $pass = $row['password'];
+        $id = $row['id'];
+        $user = $row['username'];
 
         if($password === $pass){
-            if($role == 'admin'){
+            $_SESSION['id'] = $id;
+            $_SESSION['username'] = $user;
+            $_SESSION['role'] = $role;
 
+            if($role == 'admin'){
                 Header("Location: admin/admin.php");
-                
+                exit();
             }
             else if($role == 'cashier'){
                 Header("Location: cashier/cashier.php");
+                exit();
             }
             else{
                 echo"Role not Found";

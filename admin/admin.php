@@ -1,3 +1,16 @@
+<?php
+session_start();
+
+if(!isset($_SESSION['username'])){
+    header("Location: ../index.php");
+    exit();
+}
+
+if($_SESSION['role'] != 'admin'){
+    header("Location: ../cashier/cashier.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,7 +29,7 @@
                     <li><a href="pages/inventory.php">Inventory</a></li>
                     <li><a href="pages/customers.php">Customers</a></li>
                     <li><a href="pages/accounts.php">Accounts</a></li>
-                    <li><a href="../index.php">Log Out</a></li>
+                    <li><a href="pages/assets/adminlogout.php">Log Out</a></li>
                 </ul>
         </div>
 
