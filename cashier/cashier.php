@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+if(!isset($_SESSION['username'])){
+    header("Location: ../index.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +20,7 @@
     <nav class="navbar">
         <div class="logo">MERKADO</div>
         <div class="navbaritems">
-            <a href="../index.php" class="nav-link">Logout</a>
+            <a href="cashierassets/cashierlogout.php" class="nav-link">Logout</a>
         </div>
     </nav>
 
