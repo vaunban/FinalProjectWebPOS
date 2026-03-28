@@ -14,6 +14,7 @@ if(!isset($_SESSION['username'])){
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="cashiercss/cashierstyle.css">
+    <link rel="stylesheet" href="../jquery-4.0.0.min.js">
 </head>
 <body>
 
