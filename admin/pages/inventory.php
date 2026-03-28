@@ -78,7 +78,7 @@ if($_SESSION['role'] != 'admin'){
                     <div class="AddStock-form-content">
                     <span class="close-btn">&times;</span>
                     <h2>Add Stocks</h2>
-                    <form action="addStock.php" method="POST">
+                    <form action="../pages/assets/addStock.php" method="POST">
                         <input type="text" name="id" id="productId"><br>
                         <label for="stock_quantity">Stock Quantity:</label><br>
                         <input type="number" name="stock_quantity" id="stock_quantity" required><br>
