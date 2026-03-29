@@ -1,16 +1,31 @@
 
 const addStock = document.getElementById("addStockForm");
 const openAddStock = document.getElementById("openAddStock");
-const saveAddStock = document.getElementById("saveAddStock");
-const closeX = document.querySelector(".close-btn");
+const addProd = document.getElementById("addProdForm");
+const openAddProd = document.getElementById("openAddProd");
 
-openAddStock.onclick = function() {
-  addStock.style.display = "block";
-}
+openAddStock.addEventListener("click", () => {
+  addStock.style.display = "flex";
+});
 
-saveAddStock.onclick = function() {
+openAddProd.addEventListener("click", () => {
+  addProd.style.display = "flex";
+});
+
+document.querySelectorAll('.close-btn').forEach(btn => {
+  btn.addEventListener("click", () => {
     addStock.style.display = "none";
-}
-closeX.onclick = function() {
-  addStock.style.display = "none";
-}
+    addProd.style.display = "none";
+  });
+});
+
+window.addEventListener("click", event => {
+  if (event.target === addStock) {
+    addStock.style.display = "none";
+  }
+  if (event.target === addProd) {
+    addProd.style.display = "none";
+  }
+});
+
+

@@ -18,14 +18,14 @@ if($_SESSION['role'] != 'admin'){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="css/stockstyle.css">
+    <link rel="stylesheet" href="./css/stockstyle.css">
 
 </head>
 <body>
 
     <div class="sidebar">
             <div class="sidebar-header">
-                <h2><a href="../admin.php">MERKADO</a></h1>
+                <h2><a href="../admin.php">MERKADO</a></h2>
             </div>
                 <ul class="sidebar-links">
                     <li><a href="dashboard.php">Dashboard</a></li>
@@ -73,7 +73,8 @@ if($_SESSION['role'] != 'admin'){
             ?>
         </div>
         <div>
-            <button id="openAddStock">Add Stock</button>
+            
+            <button type="button" id="openAddStock">Add Stock</button>
                 <div id="addStockForm" class="AddStock-form">
                     <div class="AddStock-form-content">
                     <span class="close-btn">&times;</span>
@@ -82,10 +83,27 @@ if($_SESSION['role'] != 'admin'){
                         <input type="text" name="id" id="productId"><br>
                         <label for="stock_quantity">Stock Quantity:</label><br>
                         <input type="number" name="stock_quantity" id="stock_quantity" required><br>
-                    <button id="saveAddStock">Save Changes</button>
+                        
+                        <button id="saveAddStock" type="submit">Save Changes</button>
+                    </form>
                     </div>
-</div>
+                    
+                </div>
         </div>
-        <script src="script/stockscript.js"></script>
+         <div>
+            <button type="button" id="openAddProd">Add Product</button>
+                <div id="addProdForm" class="AddProd-form">
+                    <div class="AddProd-form-content">
+                    <span class="close-btn">&times;</span>
+                    <h2>Add Products</h2>
+                    <form action="../pages/assets/addProduct.php" method="POST">
+                        <label for="hey">he</label>
+                        <button id="saveAddProd" type="submit">Save Changes</button>
+                    </form>
+                    </div>
+                </div>
+        </div>
+        
+        <script src="./script/stockscript.js"></script>
 </body>
 </html>
