@@ -14,7 +14,7 @@ if(!isset($_SESSION['username'])){
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="cashiercss/cashierstyle.css">
-    <link rel="stylesheet" href="../jquery-4.0.0.min.js">
+    <script src="../jquery-4.0.0.min.js"></script>
 </head>
 <body>
 
@@ -34,12 +34,9 @@ if(!isset($_SESSION['username'])){
             
                     <div class="category-section">
                         <div class="category-buttons">
-                                <button class="category-btn" data-category="meat">Meat</button>
-                                <button class="category-btn" data-category="beverage">Beverage</button>
-                                <button class="category-btn" data-category="vegetables">Vegetables</button>
-                                <button class="category-btn" data-category="fruits">Fruits</button>
-                                <button class="category-btn" data-category="dairy">Dairy</button>
-                                <button class="category-btn" data-category="snacks">Snacks</button>
+                                <?php
+                                    include("cashierassets/categread.php");
+                                ?>
                         </div>
                     </div>
 
