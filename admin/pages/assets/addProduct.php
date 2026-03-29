@@ -24,7 +24,7 @@ if($price < 1) {
     echo "<a href='../inventory.php'>Go Back</a>";
     exit;
 }
-$sql = $conn->prepare("INSERT INTO products (name, price, stock_quantity, category_id) VALUES (?, ?, ?, ?)");
+$sql = $conn->prepare("INSERT INTO products (name, price, stock_quantity, category_id, prodStatus) VALUES (?, ?, ?, ?, 'Inactive')");
 $sql->bind_param("siii", $name, $price, $stock_quantity, $category_id);
 if ($sql->execute()) {
     echo "Product added successfully.";

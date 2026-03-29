@@ -43,7 +43,7 @@ if($_SESSION['role'] != 'admin'){
         <div>
            <?php
             include (__DIR__ . '/../..//connect.php');
-            $sql = "SELECT p.name AS product_name,p.id,p.price,p.stock_quantity,c.name AS category_name
+            $sql = "SELECT p.name AS product_name,p.id,p.price,p.stock_quantity,p.prodStatus,c.name AS category_name
             FROM products p
             LEFT JOIN categories c 
             ON p.category_id = c.id";
@@ -55,6 +55,7 @@ if($_SESSION['role'] != 'admin'){
                 <th>Price</th>
                 <th>Quantity</th>
                 <th>Category</th>
+                <th>Status</th>
                 <th>Action</th>
                 </tr>";
                 while ($row = $result->fetch_assoc()) {
@@ -63,6 +64,7 @@ if($_SESSION['role'] != 'admin'){
                     echo "<td>" . $row['product_name'] . "</td>";
                     echo "<td>" . $row['price'] . "</td>";
                     echo "<td>" . $row['stock_quantity'] . "</td>";
+                    echo "<td>" . $row['prodStatus'] . "</td>";
                     echo "<td>" . $row['category_name'] . "</td>";
                     echo "</tr>";
                 }
