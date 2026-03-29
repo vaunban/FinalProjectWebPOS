@@ -60,6 +60,22 @@ body{
   position: relative;
 }
 
+.category-list {
+  margin-top: 16px;
+}
+
+.category-list table {
+  margin: 0 auto;
+  border-collapse: collapse;
+  width: auto;
+}
+
+.category-list th,
+.category-list td {
+  padding: 8px 12px;
+  text-align: center;
+}
+
 .close-btn {
   position: absolute;
   top: 10px;
