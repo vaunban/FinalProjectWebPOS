@@ -13,7 +13,7 @@ if(!isset($_SESSION['username'])){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="cashiercss/cashierstyle.css">
+    <link rel="stylesheet" href="cashiercss/posstyle.css">
     <script src="../jquery-4.0.0.min.js"></script>
 </head>
 <body>
@@ -40,7 +40,11 @@ if(!isset($_SESSION['username'])){
                         </div>
                     </div>
 
-            <p>Panel for items, cart, or controls.</p>
+            <div class="products-container">
+                <?php 
+                    include("cashierassets/productread.php"); 
+                ?>
+            </div>
         </section>
         <section class="right-panel">
             <h2>Current Order</h2>

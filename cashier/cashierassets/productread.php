@@ -6,6 +6,8 @@ $result = $conn->query($sql);
 
 while($row = $result->fetch_assoc()){
 
+    $image = !empty($row['icon_filename']) ? $row['icon_filename'] : 'default.png';
+
     echo "
     <div class='product-card'>
 
@@ -14,7 +16,7 @@ while($row = $result->fetch_assoc()){
         </div>
 
         <div class='product-image'>
-            <img src='cashierassets/images/default.png' alt='product'>
+            <img src='cashierassets/images/{$image}' alt='product'>
         </div>
 
         <div class='product-price'>
