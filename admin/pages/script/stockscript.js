@@ -4,10 +4,21 @@ $(function() {
     const $stockModal = $('#stockModal');
     const $productModal = $('#productModal');
     const $editModal = $('#editModal');
-    const $inventoryTable = $('.inventory-table');
+    const $inventorySection = $('#inventorySection');
+    const $archiveSection = $('#archiveSection');
+    const $inventoryActions = $('#inventoryActions');
+    const $sortControls = $('.sort-controls');
+    const $inventoryTab = $('#inventoryTab');
+    const $archiveTab = $('#archiveTab');
+    const $inventoryTable = $('#inventorySection');
+    const $inventoryTableContent = $('#inventoryTableContent');
+    const $archiveTableContent = $('#archiveTableContent');
+    const $sortField = $('#sortField');
+    const $sortDirection = $('#sortDirection');
+    const $applySortButton = $('#applySortButton');
     const $selectionToolbar = $('#selectionToolbar');
-    const $selectAllCheckbox = $('#selectAll');
     let currentBulkAction = null;
+    let currentView = 'inventory';
 
     // Open or close the overlay modals by toggling the active class.
     const openModal = ($modal) => $modal.addClass('active');
@@ -38,7 +49,7 @@ $(function() {
         $inventoryTable.removeClass('selection-active');
         $selectionToolbar.addClass('hidden');
         $('.row-select').prop('checked', false);
-        $selectAllCheckbox.prop('checked', false);
+        $('#selectAll').prop('checked', false);
         updateSelectionCount();
     };
 
@@ -136,13 +147,64 @@ $(function() {
             success: function(response) {
                 if (response && response.success) {
                     alert(response.message || 'Deleted successfully.');
-                    location.reload();
+                    loadProducts('inventory');
                 } else {
                     alert(response.message || 'Unable to delete selected items.');
                 }
             },
             error: function() {
                 alert('Delete request failed.');
+            }
+        });
+    };
+
+    const loadProducts = (view) => {
+        currentView = view;
+        $.ajax({
+            url: './assets/getProducts.php',
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                view: view,
+                sortField: $sortField.val(),
+                sortDirection: $sortDirection.val()
+            },
+            success: function(response) {
+                if (response && response.success) {
+                    if (view === 'archive') {
+                        $archiveTableContent.html(response.html);
+                    } else {
+                        $inventoryTableContent.html(response.html);
+                    }
+                } else {
+                    alert(response.message || 'Unable to load products.');
+                }
+            },
+            error: function() {
+                alert('Unable to load products. Please try again.');
+            }
+        });
+    };
+
+    const ajaxRestore = (archiveId) => {
+        $.ajax({
+            url: './assets/restoreProduct.php',
+            type: 'POST',
+            dataType: 'json',
+            data: { ids: [archiveId] },
+            success: function(response) {
+                if (response && response.success) {
+                    alert(response.message || 'Product restored successfully.');
+                    loadProducts('archive');
+                    if (currentView === 'inventory') {
+                        loadProducts('inventory');
+                    }
+                } else {
+                    alert(response.message || 'Unable to restore product.');
+                }
+            },
+            error: function() {
+                alert('Restore request failed.');
             }
         });
     };
@@ -160,7 +222,7 @@ $(function() {
     $('#bulkDeleteButton').on('click', () => enterSelectionMode('delete'));
     $('#selectionCancelButton').on('click', clearSelection);
 
-    $selectAllCheckbox.on('change', function() {
+    $(document).on('change', '#selectAll', function() {
         $('.row-select').prop('checked', $(this).prop('checked'));
         updateSelectionCount();
     });
@@ -190,6 +252,46 @@ $(function() {
             openEditModal(selectedIds);
             clearSelection();
         }
+    });
+
+    const switchTab = (tab) => {
+        currentView = tab;
+        if (tab === 'archive') {
+            $inventorySection.addClass('hidden');
+            $archiveSection.removeClass('hidden');
+            $inventoryActions.addClass('hidden');
+            $sortControls.addClass('hidden');
+            $inventoryTab.removeClass('active');
+            $archiveTab.addClass('active');
+            $('#pageTitle').text('Product Archive');
+            $('#pageSubtitle').text('View previously deleted products stored in the archive.');
+            clearSelection();
+            loadProducts('archive');
+            return;
+        }
+
+        $archiveSection.addClass('hidden');
+        $inventorySection.removeClass('hidden');
+        $inventoryActions.removeClass('hidden');
+        $sortControls.removeClass('hidden');
+        $archiveTab.removeClass('active');
+        $inventoryTab.addClass('active');
+        $('#pageTitle').text('Inventory');
+        $('#pageSubtitle').text('Manage your product stock, categories, and availability in one place.');
+        clearSelection();
+        loadProducts('inventory');
+    };
+
+    $inventoryTab.on('click', () => switchTab('inventory'));
+    $archiveTab.on('click', () => switchTab('archive'));
+    $applySortButton.on('click', () => loadProducts(currentView));
+
+    $(document).on('click', '.restore-archive-button', function() {
+        const archiveId = $(this).data('archive-id');
+        if (!confirm('Restore this product from the archive?')) {
+            return;
+        }
+        ajaxRestore(archiveId);
     });
 
     $(document).on('click', '.product-edit-button', function() {

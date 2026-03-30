@@ -44,10 +44,35 @@ if($_SESSION['role'] != 'admin'){
             <!-- Header section with page title and top action buttons -->
             <header class="page-top">
                 <div class="page-title-group">
-                    <h1>Inventory</h1>
-                    <p>Manage your product stock, categories, and availability in one place.</p>
+                    <h1 id="pageTitle">Inventory</h1>
+                    <p id="pageSubtitle">Manage your product stock, categories, and availability in one place.</p>
                 </div>
-                <div class="action-buttons">
+                <div class="tab-buttons">
+                    <button type="button" class="tab-button active" id="inventoryTab">Inventory</button>
+                    <button type="button" class="tab-button" id="archiveTab">Archive</button>
+                </div>
+                <div class="sort-controls">
+                    <div class="sort-group">
+                        <label for="sortField">Sort by</label>
+                        <select id="sortField">
+                            <option value="">Default</option>
+                            <option value="category">Category</option>
+                            <option value="price">Price</option>
+                            <option value="quantity">Quantity</option>
+                            <option value="status">Status</option>
+                            <option value="name">Alphabetical</option>
+                        </select>
+                    </div>
+                    <div class="sort-group">
+                        <label for="sortDirection">Order</label>
+                        <select id="sortDirection">
+                            <option value="asc">Ascending</option>
+                            <option value="desc">Descending</option>
+                        </select>
+                    </div>
+                    <button type="button" id="applySortButton" class="btn btn-secondary">Apply</button>
+                </div>
+                <div class="action-buttons" id="inventoryActions">
                     <button type="button" id="openStockModalButton" class="btn btn-secondary">Add Stock</button>
                     <button type="button" id="openProductModalButton" class="btn btn-primary">Add Product</button>
                     <button type="button" id="bulkEditButton" class="btn btn-secondary">Bulk Edit</button>
@@ -68,45 +93,90 @@ if($_SESSION['role'] != 'admin'){
                 </article>
             </section>
 
-            <section class="inventory-table">
-                <?php
-                // Connect to the database and load current product inventory with category names.
-                include (__DIR__ . '/../..//connect.php');
-                $sql = "SELECT p.name AS product_name,p.id,p.price,p.stock_quantity,p.prodStatus,p.category_id,c.name AS category_name
-                FROM products p
-                LEFT JOIN categories c 
-                ON p.category_id = c.id";
-                $result = $conn->query($sql);
-                if($result->num_rows >0) {
-                    echo "<table border = 1>";
-                    echo "<tr><th class=\"select-column\"><input type=\"checkbox\" id=\"selectAll\"></th>
-                    <th>ID</th>
-                    <th>Product Name</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Category</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                    </tr>";
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<tr>";
-                                echo "<td class=\"select-column\"><input type=\"checkbox\" class=\"row-select\" data-id=\"" . $row['id'] . "\"></td>";
-                        echo "<td>" . $row['id'] . "</td>";
-                        echo "<td>" . $row['product_name'] . "</td>";
-                        echo "<td>" . $row['price'] . "</td>";
-                        echo "<td>" . $row['stock_quantity'] . "</td>";
-                        echo "<td>" . $row['category_name'] . "</td>";
-                        echo "<td>" . $row['prodStatus'] . "</td>";
-                        // Add Edit/Delete buttons with dataset values used by JavaScript to open modals.
-                        echo "<td><button type=\"button\" class=\"table-action-button product-edit-button\" data-id=\"" . $row['id'] . "\" data-name=\"" . htmlspecialchars($row['product_name'], ENT_QUOTES) . "\" data-price=\"" . $row['price'] . "\" data-stock=\"" . $row['stock_quantity'] . "\" data-category-id=\"" . $row['category_id'] . "\" data-status=\"" . $row['prodStatus'] . "\">Edit</button> ";
-                        echo "<button type=\"button\" class=\"table-action-button product-delete-button delete\" data-id=\"" . $row['id'] . "\">Delete</button></td>";
-                        echo "</tr>";
+            <section class="inventory-table" id="inventorySection">
+                <div id="inventoryTableContent">
+                    <?php
+                    // Connect to the database and load current product inventory with category names.
+                    include (__DIR__ . '/../..//connect.php');
+                    $sql = "SELECT p.name AS product_name,p.id,p.price,p.stock_quantity,p.prodStatus,p.category_id,c.name AS category_name
+                    FROM products p
+                    LEFT JOIN categories c 
+                    ON p.category_id = c.id";
+                    $result = $conn->query($sql);
+                    if($result->num_rows >0) {
+                        echo "<table border = 1>";
+                        echo "<tr><th class=\"select-column\"><input type=\"checkbox\" id=\"selectAll\"></th>
+                        <th>ID</th>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                        </tr>";
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<tr>";
+                                    echo "<td class=\"select-column\"><input type=\"checkbox\" class=\"row-select\" data-id=\"" . $row['id'] . "\"></td>";
+                            echo "<td>" . $row['id'] . "</td>";
+                            echo "<td>" . $row['product_name'] . "</td>";
+                            echo "<td>" . $row['price'] . "</td>";
+                            echo "<td>" . $row['stock_quantity'] . "</td>";
+                            echo "<td>" . $row['category_name'] . "</td>";
+                            echo "<td>" . $row['prodStatus'] . "</td>";
+                            echo "<td><button type=\"button\" class=\"table-action-button product-edit-button\" data-id=\"" . $row['id'] . "\" data-name=\"" . htmlspecialchars($row['product_name'], ENT_QUOTES) . "\" data-price=\"" . $row['price'] . "\" data-stock=\"" . $row['stock_quantity'] . "\" data-category-id=\"" . $row['category_id'] . "\" data-status=\"" . $row['prodStatus'] . "\">Edit</button> ";
+                            echo "<button type=\"button\" class=\"table-action-button product-delete-button delete\" data-id=\"" . $row['id'] . "\">Delete</button></td>";
+                            echo "</tr>";
+                        }
+                        echo "</table>";
+                    } else {
+                        echo "<div class=\"empty-state\">No stock data found.</div>";
                     }
-                    echo "</table>";
-                } else {
-                    echo "<div class=\"empty-state\">No stock data found.</div>";
-                }
-                ?>
+                    ?>
+                </div>
+            </section>
+
+            <section class="inventory-table hidden" id="archiveSection">
+                <div id="archiveTableContent">
+                    <?php
+                    $archiveSql = "SELECT pa.archived_id, pa.id AS product_id, pa.name AS product_name, pa.price, pa.stock_quantity, pa.category_id, pa.prodStatus, pa.archived_at, pa.reason, c.name AS category_name
+                    FROM products_archive pa
+                    LEFT JOIN categories c ON pa.category_id = c.id
+                    ORDER BY pa.archived_at DESC";
+                    $archiveResult = $conn->query($archiveSql);
+                    if ($archiveResult && $archiveResult->num_rows > 0) {
+                        echo "<table border = 1>";
+                        echo "<tr>
+                            <th>Archive ID</th>
+                            <th>Product ID</th>
+                            <th>Product Name</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Archived At</th>
+                            <th>Reason</th>
+                            <th>Action</th>
+                        </tr>";
+                        while ($row = $archiveResult->fetch_assoc()) {
+                            echo "<tr>";
+                            echo "<td>" . $row['archived_id'] . "</td>";
+                            echo "<td>" . $row['product_id'] . "</td>";
+                            echo "<td>" . $row['product_name'] . "</td>";
+                            echo "<td>" . $row['price'] . "</td>";
+                            echo "<td>" . $row['stock_quantity'] . "</td>";
+                            echo "<td>" . $row['category_name'] . "</td>";
+                            echo "<td>" . $row['prodStatus'] . "</td>";
+                            echo "<td>" . $row['archived_at'] . "</td>";
+                            echo "<td>" . $row['reason'] . "</td>";
+                            echo "<td><button type=\"button\" class=\"table-action-button restore-archive-button\" data-archive-id=\"" . $row['archived_id'] . "\">Restore</button></td>";
+                            echo "</tr>";
+                        }
+                        echo "</table>";
+                    } else {
+                        echo "<div class=\"empty-state\">No archived products found.</div>";
+                    }
+                    ?>
+                </div>
             </section>
         </main>
     </div>

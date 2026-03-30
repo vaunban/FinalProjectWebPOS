@@ -38,7 +38,7 @@ $successCount = 0;
 $errors = [];
 
 foreach ($ids as $id) {
-    $select = $conn->prepare('SELECT icon_filename FROM products WHERE id = ?');
+    $select = $conn->prepare('SELECT id, name, price, stock_quantity, category_id, prodStatus, icon_filename FROM products WHERE id = ?');
     $select->bind_param('i', $id);
     $select->execute();
     $result = $select->get_result();
@@ -49,18 +49,33 @@ foreach ($ids as $id) {
     }
 
     $row = $result->fetch_assoc();
-    if (!empty($row['icon_filename'])) {
-        $imagePath = __DIR__ . '/../../../cashier/cashierassets/images/' . basename($row['icon_filename']);
-        if (file_exists($imagePath)) {
-            @unlink($imagePath);
-        }
+
+    $archive = $conn->prepare('INSERT INTO products_archive (id, name, price, stock_quantity, category_id, prodStatus, icon_filename, archived_at, reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $archivedAt = date('Y-m-d H:i:s');
+    $reason = 'Deleted by admin';
+    $archive->bind_param('ississsss', $row['id'], $row['name'], $row['price'], $row['stock_quantity'], $row['category_id'], $row['prodStatus'], $row['icon_filename'], $archivedAt, $reason);
+
+    $conn->begin_transaction();
+
+    if (!$archive->execute()) {
+        $conn->rollback();
+        $errors[] = "Error archiving product ID $id: " . $conn->error;
+        continue;
     }
 
     $delete = $conn->prepare('DELETE FROM products WHERE id = ?');
     $delete->bind_param('i', $id);
     if ($delete->execute()) {
+        if (!empty($row['icon_filename'])) {
+            $imagePath = __DIR__ . '/../../../cashier/cashierassets/images/' . basename($row['icon_filename']);
+            if (file_exists($imagePath)) {
+                @unlink($imagePath);
+            }
+        }
+        $conn->commit();
         $successCount++;
     } else {
+        $conn->rollback();
         $errors[] = "Error deleting product ID $id: " . $conn->error;
     }
 }

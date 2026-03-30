@@ -95,6 +95,77 @@ body {
     flex-wrap: wrap;
 }
 
+.sort-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    margin-top: 16px;
+}
+
+.sort-controls button {
+    min-height: 46px;
+}
+
+.sort-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 160px;
+}
+
+.sort-group label {
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #39425a;
+}
+
+.sort-group select {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid #d9dde8;
+    background-color: #ffffff;
+    font-size: 14px;
+    color: #2f3a4a;
+}
+
+.restore-archive-button {
+    color: #2f5d72;
+    border-color: #c3dbe5;
+}
+
+.restore-archive-button:hover {
+    background-color: #e9f4f9;
+}
+
+.tab-buttons {
+    display: flex;
+    gap: 12px;
+    margin: 16px 0 0;
+    flex-wrap: wrap;
+}
+
+.tab-button {
+    border: 1px solid rgba(92, 138, 79, 0.28);
+    background: #ffffff;
+    color: #3d5f3a;
+    padding: 10px 18px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.tab-button.active {
+    background-color: #5c8a4f;
+    color: white;
+    border-color: #5c8a4f;
+}
+
+.tab-button:hover {
+    background-color: #f0f6eb;
+}
+
 .btn {
     border: none;
     border-radius: 8px;
