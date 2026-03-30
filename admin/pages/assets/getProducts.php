@@ -3,11 +3,15 @@ include __DIR__ . '/../../../connect.php';
 
 header('Content-Type: application/json');
 
+// Determine whether to return inventory or archive rows.
 $view = isset($_GET['view']) && $_GET['view'] === 'archive' ? 'archive' : 'inventory';
+
+// Only allow the fields we know how to sort securely.
 $allowedSortFields = ['category', 'price', 'quantity', 'status', 'name'];
 $sortField = isset($_GET['sortField']) && in_array($_GET['sortField'], $allowedSortFields, true) ? $_GET['sortField'] : '';
 $sortDirection = isset($_GET['sortDirection']) && strtolower($_GET['sortDirection']) === 'desc' ? 'DESC' : 'ASC';
 
+// Map selected sort options to SQL ordering clauses.
 $sortSql = '';
 if ($sortField === 'category') {
     $sortSql = " ORDER BY c.name {$sortDirection}";
@@ -21,6 +25,7 @@ if ($sortField === 'category') {
     $sortSql = " ORDER BY p.name {$sortDirection}";
 }
 
+// Use output buffering so we can collect generated HTML and return it as JSON.
 ob_start();
 
 if ($view === 'archive') {
@@ -37,6 +42,7 @@ if ($view === 'archive') {
         $archiveSortSql = " ORDER BY pa.name {$sortDirection}";
     }
 
+    // Build archive SQL and apply requested sort ordering.
     $archiveSql = "SELECT pa.archived_id, pa.id AS product_id, pa.name AS product_name, pa.price, pa.stock_quantity, pa.category_id, pa.prodStatus, pa.archived_at, pa.reason, c.name AS category_name
         FROM products_archive pa
         LEFT JOIN categories c ON pa.category_id = c.id" . $archiveSortSql;
@@ -75,6 +81,7 @@ if ($view === 'archive') {
         echo "<div class=\"empty-state\">No archived products found.</div>";
     }
 } else {
+    // Build inventory SQL and apply requested sort ordering.
     $sql = "SELECT p.name AS product_name,p.id,p.price,p.stock_quantity,p.prodStatus,p.category_id,c.name AS category_name
         FROM products p
         LEFT JOIN categories c ON p.category_id = c.id" . $sortSql;

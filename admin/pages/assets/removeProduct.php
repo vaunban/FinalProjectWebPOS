@@ -63,6 +63,8 @@ foreach ($ids as $id) {
         continue;
     }
 
+    // Remove the product row from the active products table, but keep the image filename in the archive.
+    // This preserves the picture so it can be restored later.
     $delete = $conn->prepare('DELETE FROM products WHERE id = ?');
     $delete->bind_param('i', $id);
     if ($delete->execute()) {

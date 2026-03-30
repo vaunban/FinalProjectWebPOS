@@ -20,6 +20,8 @@ $(function() {
     let currentBulkAction = null;
     let currentView = 'inventory';
 
+    // currentView tracks whether the user is looking at inventory or archive.
+
     // Open or close the overlay modals by toggling the active class.
     const openModal = ($modal) => $modal.addClass('active');
     const closeModals = () => {
@@ -137,7 +139,7 @@ $(function() {
         });
     };
 
-    // Delete product(s) via AJAX and reload on success.
+    // Delete product(s) via AJAX and refresh the inventory view after archiving them.
     const ajaxDelete = (ids) => {
         $.ajax({
             url: './assets/removeProduct.php',
@@ -158,6 +160,7 @@ $(function() {
         });
     };
 
+    // Load inventory or archive rows via AJAX, including sort parameters.
     const loadProducts = (view) => {
         currentView = view;
         $.ajax({
@@ -186,6 +189,7 @@ $(function() {
         });
     };
 
+    // Restore a single archive item back into the active products table.
     const ajaxRestore = (archiveId) => {
         $.ajax({
             url: './assets/restoreProduct.php',
@@ -195,6 +199,7 @@ $(function() {
             success: function(response) {
                 if (response && response.success) {
                     alert(response.message || 'Product restored successfully.');
+                    // Reload the archive list and inventory list as needed.
                     loadProducts('archive');
                     if (currentView === 'inventory') {
                         loadProducts('inventory');
@@ -254,6 +259,7 @@ $(function() {
         }
     });
 
+    // Switch between the Inventory and Archive tabs, preserving layout and reloading the correct data.
     const switchTab = (tab) => {
         currentView = tab;
         if (tab === 'archive') {

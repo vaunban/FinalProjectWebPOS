@@ -47,10 +47,12 @@ if($_SESSION['role'] != 'admin'){
                     <h1 id="pageTitle">Inventory</h1>
                     <p id="pageSubtitle">Manage your product stock, categories, and availability in one place.</p>
                 </div>
+                <!-- Inventory / Archive tabs let the admin switch between active stock and archived products -->
                 <div class="tab-buttons">
                     <button type="button" class="tab-button active" id="inventoryTab">Inventory</button>
                     <button type="button" class="tab-button" id="archiveTab">Archive</button>
                 </div>
+                <!-- Sort controls are shown only on the Inventory tab and use AJAX to refresh the table -->
                 <div class="sort-controls">
                     <div class="sort-group">
                         <label for="sortField">Sort by</label>

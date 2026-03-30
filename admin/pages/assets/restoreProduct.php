@@ -8,10 +8,12 @@ function respond($success, $message) {
     exit;
 }
 
+// Only allow POST requests for restoring products.
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     respond(false, 'Invalid request method.');
 }
 
+// Extract archive IDs from the request body safely.
 $ids = [];
 if (isset($_POST['ids']) && is_array($_POST['ids'])) {
     $ids = array_map('intval', $_POST['ids']);
@@ -41,6 +43,7 @@ foreach ($ids as $id) {
     $row = $result->fetch_assoc();
     $productId = $row['id'];
 
+    // Prevent restoring a product if an active product with the same ID already exists.
     $check = $conn->prepare('SELECT id FROM products WHERE id = ?');
     $check->bind_param('i', $productId);
     $check->execute();
@@ -50,6 +53,7 @@ foreach ($ids as $id) {
         continue;
     }
 
+    // Use a transaction so insert and archive delete are atomic.
     $conn->begin_transaction();
 
     $insert = $conn->prepare('INSERT INTO products (id, name, price, stock_quantity, category_id, prodStatus, icon_filename) VALUES (?, ?, ?, ?, ?, ?, ?)');
@@ -61,6 +65,7 @@ foreach ($ids as $id) {
         continue;
     }
 
+    // Remove the restored entry from the archive after the product is recreated.
     $delete = $conn->prepare('DELETE FROM products_archive WHERE archived_id = ?');
     $delete->bind_param('i', $id);
     if (!$delete->execute()) {
