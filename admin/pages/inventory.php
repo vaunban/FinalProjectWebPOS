@@ -97,6 +97,7 @@ if($_SESSION['role'] != 'admin'){
 
             <section class="inventory-table" id="inventorySection">
                 <div id="inventoryTableContent">
+                    <!-- Inventory rows are loaded server-side on first page load and replaced via AJAX when sorting or deleting products. -->
                     <?php
                     // Connect to the database and load current product inventory with category names.
                     include (__DIR__ . '/../..//connect.php');
@@ -139,6 +140,7 @@ if($_SESSION['role'] != 'admin'){
 
             <section class="inventory-table hidden" id="archiveSection">
                 <div id="archiveTableContent">
+                    <!-- Archived rows are initially rendered server-side for the archive tab and can be restored with the restore button. -->
                     <?php
                     $archiveSql = "SELECT pa.archived_id, pa.id AS product_id, pa.name AS product_name, pa.price, pa.stock_quantity, pa.category_id, pa.prodStatus, pa.archived_at, pa.reason, c.name AS category_name
                     FROM products_archive pa

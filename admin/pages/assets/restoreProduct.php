@@ -53,9 +53,10 @@ foreach ($ids as $id) {
         continue;
     }
 
-    // Use a transaction so insert and archive delete are atomic.
+    // Use a transaction so insert and archive delete are atomic and the product is either fully restored or not changed.
     $conn->begin_transaction();
 
+    // Restore the archived product row back to the active products table, including the saved image filename.
     $insert = $conn->prepare('INSERT INTO products (id, name, price, stock_quantity, category_id, prodStatus, icon_filename) VALUES (?, ?, ?, ?, ?, ?, ?)');
     $insert->bind_param('ississs', $row['id'], $row['name'], $row['price'], $row['stock_quantity'], $row['category_id'], $row['prodStatus'], $row['icon_filename']);
 

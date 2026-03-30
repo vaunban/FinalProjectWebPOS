@@ -96,6 +96,7 @@ body {
     min-height: 72px;
 }
 
+/* Sort controls are visible only in the Inventory view and allow AJAX sorting by category, price, quantity, status, or alphabetical order. */
 .sort-controls {
     display: flex;
     gap: 12px;
@@ -105,6 +106,7 @@ body {
     min-height: 72px;
 }
 
+/* Hide controls visually while preserving layout space so the page doesn't jump when switching tabs. */
 .sort-controls.hidden,
 .action-buttons.hidden {
     display: flex !important;
@@ -139,6 +141,7 @@ body {
     color: #2f3a4a;
 }
 
+/* Restore button styling for archived products, matching inventory action placement for consistency. */
 .restore-archive-button {
     color: #2f5d72;
     border-color: #c3dbe5;

@@ -139,7 +139,8 @@ $(function() {
         });
     };
 
-    // Delete product(s) via AJAX and refresh the inventory view after archiving them.
+    // Delete product(s) via AJAX by sending IDs to removeProduct.php.
+    // This backend route archives deleted products rather than removing them permanently.
     const ajaxDelete = (ids) => {
         $.ajax({
             url: './assets/removeProduct.php',

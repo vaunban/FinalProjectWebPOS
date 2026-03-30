@@ -3,7 +3,8 @@ include __DIR__ . '/../../../connect.php';
 
 header('Content-Type: application/json');
 
-// Determine whether to return inventory or archive rows.
+// Determine whether to return inventory rows or archived rows.
+// The front-end switches between these views using AJAX tab controls.
 $view = isset($_GET['view']) && $_GET['view'] === 'archive' ? 'archive' : 'inventory';
 
 // Only allow the fields we know how to sort securely.
@@ -43,6 +44,7 @@ if ($view === 'archive') {
     }
 
     // Build archive SQL and apply requested sort ordering.
+    // The archive view includes a restore button in the action column.
     $archiveSql = "SELECT pa.archived_id, pa.id AS product_id, pa.name AS product_name, pa.price, pa.stock_quantity, pa.category_id, pa.prodStatus, pa.archived_at, pa.reason, c.name AS category_name
         FROM products_archive pa
         LEFT JOIN categories c ON pa.category_id = c.id" . $archiveSortSql;

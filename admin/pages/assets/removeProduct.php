@@ -50,6 +50,8 @@ foreach ($ids as $id) {
 
     $row = $result->fetch_assoc();
 
+    // Archive the product row before deletion so it can be restored later.
+    // The icon_filename is preserved so the image remains available after restore.
     $archive = $conn->prepare('INSERT INTO products_archive (id, name, price, stock_quantity, category_id, prodStatus, icon_filename, archived_at, reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
     $archivedAt = date('Y-m-d H:i:s');
     $reason = 'Deleted by admin';
@@ -63,8 +65,7 @@ foreach ($ids as $id) {
         continue;
     }
 
-    // Remove the product row from the active products table, but keep the image filename in the archive.
-    // This preserves the picture so it can be restored later.
+    // Remove the product row from the active products table after successful archive.
     $delete = $conn->prepare('DELETE FROM products WHERE id = ?');
     $delete->bind_param('i', $id);
     if ($delete->execute()) {
