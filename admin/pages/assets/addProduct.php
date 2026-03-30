@@ -1,5 +1,5 @@
 <?php
-include (__DIR__ . '../../../../connect.php');
+include (__DIR__ . '/../../../connect.php');
 $id = $_POST['id'];
 $stock_quantity = $_POST['stock_quantity'];
 $name = $_POST['name'];
@@ -24,8 +24,35 @@ if($price < 1) {
     echo "<a href='../inventory.php'>Go Back</a>";
     exit;
 }
-$sql = $conn->prepare("INSERT INTO products (name, price, stock_quantity, category_id, prodStatus) VALUES (?, ?, ?, ?, 'Inactive')");
-$sql->bind_param("siii", $name, $price, $stock_quantity, $category_id);
+if (!isset($_FILES['product_image']) || $_FILES['product_image']['error'] !== UPLOAD_ERR_OK) {
+    echo "Please upload a valid product image.";
+    echo "<a href='../inventory.php'>Go Back</a>";
+    exit;
+}
+$allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+$imageFileType = mime_content_type($_FILES['product_image']['tmp_name']);
+if (!in_array($imageFileType, $allowedTypes)) {
+    echo "Only JPG, PNG, and GIF images are allowed.";
+    echo "<a href='../inventory.php'>Go Back</a>";
+    exit;
+}
+$originalName = basename($_FILES['product_image']['name']);
+$extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+$targetDir = __DIR__ . '/../../../cashier/cashierassets/images/';
+if (!is_dir($targetDir)) {
+    mkdir($targetDir, 0755, true);
+}
+$filename = pathinfo($originalName, PATHINFO_FILENAME);
+$filename = preg_replace('/[^A-Za-z0-9_-]/', '_', $filename);
+$targetFile = $targetDir . $filename . '_' . time() . '.' . $extension;
+if (!move_uploaded_file($_FILES['product_image']['tmp_name'], $targetFile)) {
+    echo "Unable to upload image. Please try again.";
+    echo "<a href='../inventory.php'>Go Back</a>";
+    exit;
+}
+$icon_filename = basename($targetFile);
+$sql = $conn->prepare("INSERT INTO products (name, price, stock_quantity, category_id, prodStatus, icon_filename) VALUES (?, ?, ?, ?, 'Inactive', ?)");
+$sql->bind_param("siiis", $name, $price, $stock_quantity, $category_id, $icon_filename);
 if ($sql->execute()) {
     echo "Product added successfully.";
     header("Location: ../inventory.php");
