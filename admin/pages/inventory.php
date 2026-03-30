@@ -1,4 +1,6 @@
 <?php
+// Start session and verify the user is logged in as admin.
+// Start the session and verify that an admin user is logged in.
 session_start();
 
 if(!isset($_SESSION['username'])){
@@ -22,7 +24,9 @@ if($_SESSION['role'] != 'admin'){
 
 </head>
 <body>
+    <!-- Main page wrapper containing sidebar and content area -->
     <div class="page-container">
+        <!-- Persistent admin navigation sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <h2><a href="../admin.php">MERKADO</a></h2>
@@ -37,6 +41,7 @@ if($_SESSION['role'] != 'admin'){
         </aside>
 
         <main class="content">
+            <!-- Header section with page title and top action buttons -->
             <header class="page-top">
                 <div class="page-title-group">
                     <h1>Inventory</h1>
@@ -65,6 +70,7 @@ if($_SESSION['role'] != 'admin'){
 
             <section class="inventory-table">
                 <?php
+                // Connect to the database and load current product inventory with category names.
                 include (__DIR__ . '/../..//connect.php');
                 $sql = "SELECT p.name AS product_name,p.id,p.price,p.stock_quantity,p.prodStatus,p.category_id,c.name AS category_name
                 FROM products p
@@ -91,6 +97,7 @@ if($_SESSION['role'] != 'admin'){
                         echo "<td>" . $row['stock_quantity'] . "</td>";
                         echo "<td>" . $row['category_name'] . "</td>";
                         echo "<td>" . $row['prodStatus'] . "</td>";
+                        // Add Edit/Delete buttons with dataset values used by JavaScript to open modals.
                         echo "<td><button type=\"button\" class=\"table-action-button product-edit-button\" data-id=\"" . $row['id'] . "\" data-name=\"" . htmlspecialchars($row['product_name'], ENT_QUOTES) . "\" data-price=\"" . $row['price'] . "\" data-stock=\"" . $row['stock_quantity'] . "\" data-category-id=\"" . $row['category_id'] . "\" data-status=\"" . $row['prodStatus'] . "\">Edit</button> ";
                         echo "<button type=\"button\" class=\"table-action-button product-delete-button delete\" data-id=\"" . $row['id'] . "\">Delete</button></td>";
                         echo "</tr>";
@@ -104,15 +111,17 @@ if($_SESSION['role'] != 'admin'){
         </main>
     </div>
 
+    <!-- Hidden delete form used by bulk/single delete actions via JavaScript -->
     <form id="productDeleteForm" action="./assets/removeProduct.php" method="POST" style="display:none;">
         <div id="productDeleteInputs"></div>
     </form>
 
+    <!-- Modal to add or update stock for an existing product -->
     <div id="stockModal" class="stock-modal">
         <div class="stock-modal-content">
             <span class="close-btn">&times;</span>
             <h2>Add Stocks</h2>
-            <form action="../pages/assets/addStock.php" method="POST">
+            <form id="addStockForm" action="../pages/assets/addStock.php" method="POST">
                 <label for="productId">Product ID</label>
                 <input type="text" name="id" id="productId" placeholder="Enter product ID">
                 <label for="stock_quantity_add">Stock Quantity</label>
@@ -122,11 +131,12 @@ if($_SESSION['role'] != 'admin'){
         </div>
     </div>
 
+    <!-- Modal to add a new product, including image upload and category selection -->
     <div id="productModal" class="product-modal">
         <div class="product-modal-content">
             <span class="close-btn">&times;</span>
             <h2>Add Products</h2>
-            <form action="../pages/assets/addProduct.php" method="POST" enctype="multipart/form-data">
+            <form id="addProductForm" action="../pages/assets/addProduct.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="id" id="id">
                 <label for="name">Product Name</label>
                 <input type="text" name="name" id="name" required placeholder="Name">
@@ -135,11 +145,12 @@ if($_SESSION['role'] != 'admin'){
                 <label for="stock_quantity">Stock Quantity</label>
                 <input type="number" name="stock_quantity" id="stock_quantity" required placeholder="Stock Quantity">
                 <label for="product_image">Product Image</label>
-                <input type="file" name="product_image" id="product_image" accept="image/*" required>
+                <input type="file" name="product_image" id="product_image" accept="image/png, image/jpeg, image/gif, image/webp" required>
                 <label for="category_id">Category</label>
                 <select name="category_id" id="category_id" required>
                     <option value="" disabled selected>Select category</option>
                     <?php
+                    // Load category names for the Add Product dropdown.
                     include (__DIR__ . '/../..//connect.php');
                     $sql = "SELECT id, name FROM categories";
                     $result = $conn->query($sql);
@@ -160,6 +171,7 @@ if($_SESSION['role'] != 'admin'){
         </div>
     </div>
 
+    <!-- Modal to edit one or more products; form fields are prefilled when editing a single product -->
     <div id="editModal" class="edit-modal">
         <div class="edit-modal-content">
             <span class="close-btn">&times;</span>
@@ -193,12 +205,14 @@ if($_SESSION['role'] != 'admin'){
                     <option value="Inactive">Inactive</option>
                 </select>
                 <label for="editProductImage">Product Image</label>
-                <input type="file" name="product_image" id="editProductImage" accept="image/*">
+                <input type="file" name="product_image" id="editProductImage" accept="image/png, image/jpeg, image/gif, image/webp">
                 <button id="saveEditButton" class="btn btn-primary" type="submit">Save Changes</button>
             </form>
         </div>
     </div>
 
+    <!-- Load jQuery first, then the custom inventory script for modal and AJAX behavior. -->
+    <script src="../../jquery-4.0.0.min.js"></script>
     <script src="./script/stockscript.js"></script>
 </body>
 </html>

@@ -1,14 +1,33 @@
 <?php
 include (__DIR__ . '/../../../connect.php');
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['ids']) || !is_array($_POST['ids']) || count($_POST['ids']) === 0) {
-    header('Location: ../inventory.php');
+function respond($success, $message, $redirect = '../inventory.php') {
+    // Return either JSON for AJAX or a normal redirect for form submissions.
+    if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => $success, 'message' => $message]);
+        exit;
+    }
+
+    if ($success) {
+        header("Location: $redirect");
+        exit;
+    }
+
+    echo $message;
+    echo "<br><a href=\"$redirect\">Go Back</a>";
     exit;
+}
+
+// Ensure we have at least one product ID for the update.
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['ids']) || !is_array($_POST['ids']) || count($_POST['ids']) === 0) {
+    respond(false, 'No product selected for update.');
 }
 
 $ids = array_map('intval', $_POST['ids']);
 $fields = [];
 
+// Helper to bind dynamic mysqli parameters safely.
 function bindParams($stmt, $types, &$params) {
     $refs = [];
     foreach ($params as $key => $value) {
@@ -25,18 +44,14 @@ if (isset($_POST['name']) && trim($_POST['name']) !== '') {
 if (isset($_POST['price']) && $_POST['price'] !== '') {
     $fields['price'] = intval($_POST['price']);
     if ($fields['price'] < 1) {
-        echo 'Price must be at least 1.';
-        echo '<br><a href="../inventory.php">Go Back</a>';
-        exit;
+        respond(false, 'Price must be at least 1.');
     }
 }
 
 if (isset($_POST['stock_quantity']) && $_POST['stock_quantity'] !== '') {
     $fields['stock_quantity'] = intval($_POST['stock_quantity']);
     if ($fields['stock_quantity'] < 0) {
-        echo 'Stock quantity cannot be negative.';
-        echo '<br><a href="../inventory.php">Go Back</a>';
-        exit;
+        respond(false, 'Stock quantity cannot be negative.');
     }
 }
 
@@ -56,30 +71,63 @@ if (isset($fields['name'])) {
     $checkSql->execute();
     $checkResult = $checkSql->get_result();
     if ($checkResult->num_rows > 0) {
-        echo 'A different product with the same name already exists.';
-        echo '<br><a href="../inventory.php">Go Back</a>';
-        exit;
+        respond(false, 'A different product with the same name already exists.');
     }
 }
 
+// If a new product image is provided, validate it and save it to the images folder.
 $imageFilenames = [];
 if (isset($_FILES['product_image']) && $_FILES['product_image']['error'] !== UPLOAD_ERR_NO_FILE) {
-    if ($_FILES['product_image']['error'] !== UPLOAD_ERR_OK) {
-        echo 'Please upload a valid product image.';
-        echo '<br><a href="../inventory.php">Go Back</a>';
-        exit;
+    $uploadError = $_FILES['product_image']['error'];
+    if ($uploadError !== UPLOAD_ERR_OK) {
+        $uploadErrors = [
+            UPLOAD_ERR_INI_SIZE => 'The uploaded file exceeds the upload_max_filesize directive.',
+            UPLOAD_ERR_FORM_SIZE => 'The uploaded file exceeds the MAX_FILE_SIZE directive.',
+            UPLOAD_ERR_PARTIAL => 'The uploaded file was only partially uploaded.',
+            UPLOAD_ERR_NO_FILE => 'No file was uploaded.',
+            UPLOAD_ERR_NO_TMP_DIR => 'Missing a temporary folder on the server.',
+            UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk.',
+            UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload.'
+        ];
+        respond(false, $uploadErrors[$uploadError] ?? 'Please upload a valid product image.');
     }
 
-    $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-    $imageFileType = mime_content_type($_FILES['product_image']['tmp_name']);
-    if (!in_array($imageFileType, $allowedTypes)) {
-        echo 'Only JPG, PNG, and GIF images are allowed.';
-        echo '<br><a href="../inventory.php">Go Back</a>';
-        exit;
+    $imageTmpPath = $_FILES['product_image']['tmp_name'];
+    if (!is_uploaded_file($imageTmpPath)) {
+        respond(false, 'Uploaded file is not valid.');
+    }
+
+    // Detect MIME type using multiple methods for compatibility.
+    $allowedTypes = ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/webp'];
+    $imageFileType = '';
+    if (function_exists('finfo_open')) {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $imageFileType = finfo_file($finfo, $imageTmpPath);
+        finfo_close($finfo);
+    }
+
+    if (!$imageFileType && function_exists('mime_content_type')) {
+        $imageFileType = mime_content_type($imageTmpPath);
+    }
+
+    if (!$imageFileType && function_exists('getimagesize')) {
+        $imageInfo = getimagesize($imageTmpPath);
+        if ($imageInfo) {
+            $imageFileType = $imageInfo['mime'];
+        }
+    }
+
+    if (!in_array($imageFileType, $allowedTypes, true)) {
+        respond(false, 'Only JPG, PNG, GIF, and WEBP images are allowed. Detected: ' . $imageFileType);
     }
 
     $originalName = basename($_FILES['product_image']['name']);
     $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+    if (!in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'], true)) {
+        respond(false, 'Only JPG, PNG, GIF, and WEBP file extensions are allowed.');
+    }
+
+    // Save the uploaded image to the product images directory.
     $targetDir = __DIR__ . '/../../../cashier/cashierassets/images/';
     if (!is_dir($targetDir)) {
         mkdir($targetDir, 0755, true);
@@ -90,10 +138,8 @@ if (isset($_FILES['product_image']) && $_FILES['product_image']['error'] !== UPL
     $firstFilename = $baseName . '_1.' . $extension;
     $firstPath = $targetDir . $firstFilename;
 
-    if (!move_uploaded_file($_FILES['product_image']['tmp_name'], $firstPath)) {
-        echo 'Unable to upload image. Please try again.';
-        echo '<br><a href="../inventory.php">Go Back</a>';
-        exit;
+    if (!move_uploaded_file($imageTmpPath, $firstPath)) {
+        respond(false, 'Unable to upload image. Please try again.');
     }
 
     $imageFilenames[] = $firstFilename;
@@ -102,9 +148,7 @@ if (isset($_FILES['product_image']) && $_FILES['product_image']['error'] !== UPL
             $copyFilename = $baseName . '_' . ($index + 2) . '.' . $extension;
             $copyPath = $targetDir . $copyFilename;
             if (!copy($firstPath, $copyPath)) {
-                echo 'Unable to prepare image for bulk update.';
-                echo '<br><a href="../inventory.php">Go Back</a>';
-                exit;
+                respond(false, 'Unable to prepare image for bulk update.');
             }
             $imageFilenames[] = $copyFilename;
         }
@@ -114,8 +158,7 @@ if (isset($_FILES['product_image']) && $_FILES['product_image']['error'] !== UPL
 }
 
 if (empty($fields)) {
-    header('Location: ../inventory.php');
-    exit;
+    respond(false, 'No update fields were submitted.');
 }
 
 foreach ($ids as $index => $id) {
@@ -178,11 +221,8 @@ foreach ($ids as $index => $id) {
     $stmt = $conn->prepare($sql);
     bindParams($stmt, $updateTypes, $updateValues);
     if (!$stmt->execute()) {
-        echo 'Error updating product ID ' . $id . ': ' . $conn->error;
-        echo '<br><a href="../inventory.php">Go Back</a>';
-        exit;
+        respond(false, 'Error updating product ID ' . $id . ': ' . $conn->error);
     }
 }
 
-header('Location: ../inventory.php');
-exit;
+respond(true, 'Product update completed successfully.');
