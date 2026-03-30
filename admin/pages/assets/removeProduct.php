@@ -66,12 +66,6 @@ foreach ($ids as $id) {
     $delete = $conn->prepare('DELETE FROM products WHERE id = ?');
     $delete->bind_param('i', $id);
     if ($delete->execute()) {
-        if (!empty($row['icon_filename'])) {
-            $imagePath = __DIR__ . '/../../../cashier/cashierassets/images/' . basename($row['icon_filename']);
-            if (file_exists($imagePath)) {
-                @unlink($imagePath);
-            }
-        }
         $conn->commit();
         $successCount++;
     } else {

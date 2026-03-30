@@ -93,6 +93,7 @@ body {
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
+    min-height: 72px;
 }
 
 .sort-controls {
@@ -101,6 +102,15 @@ body {
     flex-wrap: wrap;
     align-items: flex-end;
     margin-top: 16px;
+    min-height: 72px;
+}
+
+.sort-controls.hidden,
+.action-buttons.hidden {
+    display: flex !important;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .sort-controls button {
