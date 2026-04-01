@@ -20,14 +20,14 @@ if($_SESSION['role'] != 'admin'){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="./css/stockstyle.css">
+    <link rel="stylesheet" href="./css/inventorystyle.css">
 
 </head>
 <body>
     <!-- Main page wrapper containing sidebar and content area -->
     <div class="page-container">
         <!-- Persistent admin navigation sidebar -->
-        <aside class="sidebar">
+        <div class="sidebar">
             <div class="sidebar-header">
                 <h2><a href="../admin.php">MERKADO</a></h2>
             </div>
@@ -38,7 +38,7 @@ if($_SESSION['role'] != 'admin'){
                 <li><a href="accounts.php">Accounts</a></li>
                 <li><a href="assets/adminlogout.php">Log Out</a></li>
             </ul>
-        </aside>
+        </div>
 
         <main class="content">
             <!-- Header section with page title and top action buttons -->
