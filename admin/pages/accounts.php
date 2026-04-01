@@ -21,7 +21,7 @@ if($_SESSION['role'] != 'admin'){
     <link rel="stylesheet" href="css/accountsstyle.css">
 </head>
 <body>
-
+ 
         <div class="sidebar">
             <div class="sidebar-header">
                 <h2><a href="../admin.php">MERKADO</a></h2>
@@ -35,12 +35,26 @@ if($_SESSION['role'] != 'admin'){
                 </ul>
         </div>
 
-        <div class="mainshift">
-            <h1>Welcome to Account Page</h1>
-            
-            <table border = 1>
+        <main class="mainshift">
+            <header class="mainshift-top">
+                <div>
+                    <div class="mainshift-top-title"><h1>Account Management</h1></div>
+
+                    <form class="role-name-container" method = "GET">
+                        <input class="searchbar" type="text" id="name" name="search" placeholder="Search by Name"> </input>
+                    
+                        <select  name = "role">
+                            <option value = "" hidden selected > Filter: Role</option>
+                            <option value = "admin"> Admin </option>
+                            <option value = "cashier"> Cashier </option>
+                        </select>
+                    </form>
+                </div> 
+            </header>
+
+            <table class="table-container" border = 1>
                 <tr>
-                    <th> USERS ID </th>
+                    <th> USER ID </th>
                     <th> NAME </th>
                     <th> USERNAME </th>
                     <th> ROLE </th>
@@ -61,23 +75,14 @@ if($_SESSION['role'] != 'admin'){
                     echo "<td>" . $row['username'] . "</td>";
                     echo "<td>" . $row['role'] . "</td>";
                     echo "<td> status </td>";
-                    echo"<td> Edit | Delete </td>";
+                    echo"<td><a class='action-edit'>Edit</a>"."<a class='action-delete'>Delete</a></td>";
                     echo "</tr>";
                     }
                 ?>
             </table>
 
-            <button> + Add User </button>
+            <button class="add-user-btn"> + Add User </button>
 
-            <form method = "GET">
-                <input type="text" id="name" name="search" placeholder="Search by Name"><br>
-
-                <select name = "role">
-                    <option value = "" hidden selected > Filter: Role</option>
-                    <option value = "admin"> Admin </option>
-                    <option value = "cashier"> Cashier </option>
-                </select>
-            </form>
-        </div>
+        </main>
 </body>
 </html>
