@@ -81,7 +81,14 @@ $(function() {
     function changeQuantity(id, delta) {
         const item = findCartItem(id);
         if (!item) return;
-        item.quantity = Math.max(1, item.quantity + delta);
+        const newQuantity = item.quantity + delta;
+        
+        if (newQuantity > item.stock) {
+            showPopup('Not enough stock available. Remaining stock: ' + item.stock, false);
+            return;
+        }
+
+        item.quantity = Math.max(1, newQuantity);
         updateCartDisplay();
     }
 
@@ -104,12 +111,21 @@ $(function() {
         const productId = $button.data('product-id');
         const name = $button.data('product-name');
         const price = parseFloat($button.data('product-price')) || 0;
+        const stock = parseInt($button.data('product-stock')) || 0;
 
         let item = findCartItem(productId);
         if (item) {
+            if (item.quantity + 1 > stock) {
+                showPopup('Not enough stock available. Remaining stock: ' + stock, false);
+                return;
+            }
             item.quantity += 1;
         } else {
-            cart.push({ id: productId, name, price, quantity: 1 });
+            if (1 > stock) {
+                showPopup('Not enough stock available. Remaining stock: ' + stock, false);
+                return;
+            }
+            cart.push({ id: productId, name, price, quantity: 1, stock: stock });
         }
         updateCartDisplay();
     });
@@ -222,6 +238,7 @@ $(function() {
                 if (response.success) {
                     cart.length = 0;
                     updateCartDisplay();
+                    loadProducts(activeCategory, currentSearch);
                     $('#checkout-modal').addClass('hidden');
                     $('#cash-given').val('');
                     let message = 'Transaction completed successfully. Receipt: ' + response.receipt_number;

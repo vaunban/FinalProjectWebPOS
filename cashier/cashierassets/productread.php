@@ -7,7 +7,7 @@ $query = isset($_GET['query']) ? trim($_GET['query']) : '';
 $sql = "SELECT p.*, c.name AS category_name 
         FROM products p 
         LEFT JOIN categories c ON p.category_id = c.id 
-        WHERE p.prodStatus = 'active'";
+        WHERE p.prodStatus = 'active' AND p.stock_quantity > 0";
 $params = [];
 $types = '';
 
@@ -65,7 +65,8 @@ while ($row = $result->fetch_assoc()) {
                 data-product-id='" . htmlspecialchars($row['id'], ENT_QUOTES) . "'
                 data-product-name='" . htmlspecialchars($row['name'], ENT_QUOTES) . "'
                 data-product-price='{$price}'
-                data-product-category='{$categoryKey}'>
+                data-product-category='{$categoryKey}'
+                data-product-stock='" . htmlspecialchars($row['stock_quantity'], ENT_QUOTES) . "'>
             Add to Cart
         </button>
 

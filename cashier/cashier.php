@@ -113,6 +113,6 @@ if(!isset($_SESSION['username']) || !isset($_SESSION['id'])){
 
     <div id="popup-message" class="popup-message hidden"></div>
 
-    <script src="cashierjs/posscript.js"></script>
+    <script src="cashierjs/posscript.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>
