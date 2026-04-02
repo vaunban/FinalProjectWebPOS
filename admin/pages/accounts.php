@@ -55,7 +55,6 @@ if($_SESSION['role'] != 'admin'){
             <table class="table-container" border = 1>
                 <tr>
                     <th> USER ID </th>
-                    <th> NAME </th>
                     <th> USERNAME </th>
                     <th> ROLE </th>
                     <th> STATUS </th>
@@ -71,7 +70,6 @@ if($_SESSION['role'] != 'admin'){
                     {
                     echo "<tr>";
                     echo "<td>" . $row['id'] . "</td>";
-                    echo "<td> name </td>";
                     echo "<td>" . $row['username'] . "</td>";
                     echo "<td>" . $row['role'] . "</td>";
                     echo "<td> status </td>";
