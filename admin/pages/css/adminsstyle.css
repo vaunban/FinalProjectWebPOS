@@ -38,15 +38,22 @@ body{
 
 .sidebar-links li a{
     display: block;
-    padding: 15px 20px;
+    padding: 14px 24px;
     text-decoration: none;
     color: white;
+    border-left: 4px solid transparent;
+    transition: all 0.2s ease;
 }
 
-.sidebar-links li a:hover{
-    background-color: rgb(77, 104, 75);
+.sidebar-links li a:hover,
+.sidebar-links li a.active {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-left-color: #f0f0f0;
 }
 
 .mainshift{
-    padding: 20px;
+    flex: 1;
+    width: 100%;
+    padding-top: 20px;
+    padding-left: 20px;
 }

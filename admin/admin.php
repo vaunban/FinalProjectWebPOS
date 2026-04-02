@@ -17,7 +17,7 @@ if($_SESSION['role'] != 'admin'){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="pages/css/adminstyle.css">
+    <link rel="stylesheet" href="pages/css/adminsstyle.css">
 </head>
 <body>
         <div class="sidebar">
