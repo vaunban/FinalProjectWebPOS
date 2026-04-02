@@ -24,9 +24,7 @@ if($_SESSION['role'] != 'admin'){
 
 </head>
 <body>
-    <!-- Main page wrapper containing sidebar and content area -->
     <div class="page-container">
-        <!-- Persistent admin navigation sidebar -->
         <div class="sidebar">
             <div class="sidebar-header">
                 <h2><a href="../admin.php">MERKADO</a></h2>
@@ -34,25 +32,22 @@ if($_SESSION['role'] != 'admin'){
             <ul class="sidebar-links">
                 <li><a href="dashboard.php">Dashboard</a></li>
                 <li><a href="inventory.php">Inventory</a></li>
-                <li><a href="customers.php">Customers</a></li>
+                <li><a href="transactions.php">Transactions</a></li>
                 <li><a href="accounts.php">Accounts</a></li>
                 <li><a href="assets/adminlogout.php">Log Out</a></li>
             </ul>
         </div>
 
         <main class="content">
-            <!-- Header section with page title and top action buttons -->
             <header class="page-top">
                 <div class="page-title-group">
                     <h1 id="pageTitle">Inventory</h1>
                     <p id="pageSubtitle">Manage your product stock, categories, and availability in one place.</p>
                 </div>
-                <!-- Inventory / Archive tabs let the admin switch between active stock and archived products -->
                 <div class="tab-buttons">
                     <button type="button" class="tab-button active" id="inventoryTab">Inventory</button>
                     <button type="button" class="tab-button" id="archiveTab">Archive</button>
                 </div>
-                <!-- Sort controls are shown only on the Inventory tab and use AJAX to refresh the table -->
                 <div class="sort-controls">
                     <div class="sort-group">
                         <label for="sortField">Sort by</label>
@@ -96,10 +91,8 @@ if($_SESSION['role'] != 'admin'){
             </section>
 
             <section class="inventory-table" id="inventorySection">
-                <div id="inventoryTableContent">
-                    <!-- Inventory rows are loaded server-side on first page load and replaced via AJAX when sorting or deleting products. -->
+                <div id="inventoryTableContent"> -->
                     <?php
-                    // Connect to the database and load current product inventory with category names.
                     include (__DIR__ . '/../..//connect.php');
                     $sql = "SELECT p.name AS product_name,p.id,p.price,p.stock_quantity,p.prodStatus,p.category_id,c.name AS category_name
                     FROM products p
@@ -139,8 +132,7 @@ if($_SESSION['role'] != 'admin'){
             </section>
 
             <section class="inventory-table hidden" id="archiveSection">
-                <div id="archiveTableContent">
-                    <!-- Archived rows are initially rendered server-side for the archive tab and can be restored with the restore button. -->
+                <div id="archiveTableContent"> -->
                     <?php
                     $archiveSql = "SELECT pa.archived_id, pa.id AS product_id, pa.name AS product_name, pa.price, pa.stock_quantity, pa.category_id, pa.prodStatus, pa.archived_at, pa.reason, c.name AS category_name
                     FROM products_archive pa
@@ -184,13 +176,10 @@ if($_SESSION['role'] != 'admin'){
             </section>
         </main>
     </div>
-
-    <!-- Hidden delete form used by bulk/single delete actions via JavaScript -->
     <form id="productDeleteForm" action="./assets/removeProduct.php" method="POST" style="display:none;">
         <div id="productDeleteInputs"></div>
     </form>
 
-    <!-- Modal to add or update stock for an existing product -->
     <div id="stockModal" class="stock-modal">
         <div class="stock-modal-content">
             <span class="close-btn">&times;</span>
@@ -205,7 +194,6 @@ if($_SESSION['role'] != 'admin'){
         </div>
     </div>
 
-    <!-- Modal to add a new product, including image upload and category selection -->
     <div id="productModal" class="product-modal">
         <div class="product-modal-content">
             <span class="close-btn">&times;</span>
@@ -224,7 +212,6 @@ if($_SESSION['role'] != 'admin'){
                 <select name="category_id" id="category_id" required>
                     <option value="" disabled selected>Select category</option>
                     <?php
-                    // Load category names for the Add Product dropdown.
                     include (__DIR__ . '/../..//connect.php');
                     $sql = "SELECT id, name FROM categories";
                     $result = $conn->query($sql);
@@ -244,8 +231,6 @@ if($_SESSION['role'] != 'admin'){
             </form>
         </div>
     </div>
-
-    <!-- Modal to edit one or more products; form fields are prefilled when editing a single product -->
     <div id="editModal" class="edit-modal">
         <div class="edit-modal-content">
             <span class="close-btn">&times;</span>
@@ -284,8 +269,6 @@ if($_SESSION['role'] != 'admin'){
             </form>
         </div>
     </div>
-
-    <!-- Load jQuery first, then the custom inventory script for modal and AJAX behavior. -->
     <script src="../../jquery-4.0.0.min.js"></script>
     <script src="./script/stockscript.js"></script>
 </body>

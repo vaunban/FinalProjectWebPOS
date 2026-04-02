@@ -27,7 +27,7 @@ if($_SESSION['role'] != 'admin'){
                 <ul class="sidebar-links">
                     <li><a href="pages/dashboard.php">Dashboard</a></li>
                     <li><a href="pages/inventory.php">Inventory</a></li>
-                    <li><a href="pages/customers.php">Customers</a></li>
+                    <li><a href="pages/transactions.php">Transactions</a></li>
                     <li><a href="pages/accounts.php">Accounts</a></li>
                     <li><a href="pages/assets/adminlogout.php">Log Out</a></li>
                 </ul>

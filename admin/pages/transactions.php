@@ -29,14 +29,14 @@ if($_SESSION['role'] != 'admin'){
                 <ul class="sidebar-links">
                     <li><a href="dashboard.php">Dashboard</a></li>
                     <li><a href="inventory.php">Inventory</a></li>
-                    <li><a href="customers.php">Customers</a></li>
+                    <li><a href="transactions.php">Transactions</a></li>
                     <li><a href="accounts.php">Accounts</a></li>
                     <li><a href="assets/adminlogout.php">Log Out</a></li>
                 </ul>
         </div>
 
         <div class="mainshift">
-            <h1>Welcome to Customer</h1>
+            <h1>Welcome to Transactions</h1>
             <p>what what what what what what</p>
         </div>
 </body>
