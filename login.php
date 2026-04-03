@@ -22,23 +22,25 @@
             $_SESSION['role'] = $role;
 
             if($role == 'admin'){
-                Header("Location: admin/admin.php");
+                header("Location: admin/admin.php");
                 exit();
             }
             else if($role == 'cashier'){
-                Header("Location: cashier/cashier.php");
+                header("Location: cashier/cashier.php");
                 exit();
             }
             else{
-                echo"Role not Found";
+                echo "Role not Found";
             }
         }
         else{
-            echo"Wrong Password";
+            header("Location: index.php?error=wrong_password");
+            exit();
         }
     }
     else{
-        echo"Login Failed";
+        header("Location: index.php?error=user_not_found");
+        exit();
     }
     $stmt->close();
 ?>
