@@ -14,8 +14,27 @@
     <h2> merkado </h2>
     </div>
 
+    <?php
+    $error_message = '';
+    if (!empty($_GET['error'])) {
+        if ($_GET['error'] === 'wrong_password') {
+            $error_message = 'Incorrect password. Please try again.';
+        } elseif ($_GET['error'] === 'user_not_found') {
+            $error_message = 'Username not found. Please check your username.';
+        } else {
+            $error_message = 'Login failed. Please try again.';
+        }
+    }
+    ?>
+
     <div class = "main">
     <h1 style="font-style: italic; color: brown;"> Login! </h1>
+
+    <?php if ($error_message): ?>
+        <div style="color: red; margin-bottom: 8px; font-weight: bold;">
+            <?= htmlspecialchars($error_message) ?>
+        </div>
+    <?php endif; ?>
 
     <form action="login.php" method="post">
         <div class = "user">
