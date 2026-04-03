@@ -573,3 +573,56 @@ body {
 .order-panel-header {
     flex-shrink: 0;
 }
+
+/* ── Modal scroll container ─────────────────────────────────────────────
+   Keeps the modal content scrollable on smaller screens without
+   breaking its layout inside the overlay.                              */
+.modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* ── Guest Checkout toggle row ─────────────────────────────────────────
+   Styled to feel like a subtle option row that sits naturally between
+   the cart summary and the customer fields.                            */
+.guest-toggle-field {
+    background: #f5f7f2;
+    border: 1px solid #c8d4b0;
+    border-radius: 8px;
+    padding: 0.55rem 0.75rem;
+    margin-bottom: 0.85rem;
+}
+
+.guest-checkbox-label {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500 !important;
+    color: #3a4a28 !important;
+    cursor: pointer;
+    margin-bottom: 0 !important;
+    user-select: none;
+}
+
+.guest-checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #057214;
+    cursor: pointer;
+    flex-shrink: 0;
+    /* Override the full-width rule from .modal-field input */
+    width: 16px !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+}
+
+/* ── Required field star ───────────────────────────────────────────────
+   Small red asterisk shown next to the Customer Name label to signal
+   that the field is mandatory (unless guest mode is active).          */
+.required-star {
+    color: #c0392b;
+    font-weight: 700;
+    margin-left: 2px;
+}
