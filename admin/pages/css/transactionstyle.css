@@ -1,4 +1,10 @@
-body{
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
     margin: 0;
     padding: 0;
     display: flex;
@@ -9,7 +15,7 @@ body{
 
 /* Sidebar */
 
-.sidebar{
+.sidebar {
     background: linear-gradient(180deg, #5c8a4f 0%, #3d5f3a 100%);
     color: white;
     height: 100vh;
@@ -18,9 +24,9 @@ body{
     top: 0;
 }
 
-.sidebar-header{
+.sidebar-header {
     text-align: center;
-    padding:24px 20px;
+    padding: 24px 20px;
 }
 
 .sidebar-header h2 {
@@ -28,17 +34,17 @@ body{
     font-size: 24px;
 }
 
-.sidebar-header h2 a{
+.sidebar-header h2 a {
     text-decoration: none;
     color: white;
 }
 
-.sidebar-links{
+.sidebar-links {
     list-style: none;
     padding: 0;
 }
 
-.sidebar-links li a{
+.sidebar-links li a {
     display: block;
     padding: 14px 24px;
     text-decoration: none;
@@ -53,7 +59,359 @@ body{
     border-left-color: #f0f0f0;
 }
 
+/* Main Content */
+.mainshift {
+    flex: 1;
+    padding: 20px 24px;
+}
 
-.mainshift{
-    padding: 20px;
+/* Header Section */
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.header-section h1 {
+    color: #2c3e2f;
+    font-size: 1.8rem;
+}
+
+/* Filter Section */
+.filter-section {
+    background: white;
+    padding: 1.25rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.filter-group label {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #555;
+}
+
+.filter-input {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-width: 150px;
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: #5c8a4f;
+}
+
+.search-btn, .reset-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.search-btn {
+    background-color: #5c8a4f;
+    color: white;
+}
+
+.search-btn:hover {
+    background-color: #3d5f3a;
+}
+
+.reset-btn {
+    background-color: #6c757d;
+    color: white;
+}
+
+.reset-btn:hover {
+    background-color: #5a6268;
+}
+
+/* Summary Cards */
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.summary-card {
+    background: white;
+    padding: 1.25rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.summary-card h3 {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.summary-card p {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #2c3e2f;
+}
+
+/* Transactions Table */
+.table-container {
+    background: white;
+    border-radius: 8px;
+    overflow-x: auto;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.transactions-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.transactions-table th,
+.transactions-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.transactions-table th {
+    background-color: #5c8a4f;
+    color: white;
+    font-weight: bold;
+}
+
+.transactions-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+.view-btn {
+    background-color: #5c8a4f;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.view-btn:hover {
+    background-color: #3d5f3a;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.page-btn {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.page-btn:hover {
+    background-color: #f0f0f0;
+}
+
+.page-btn.active {
+    background-color: #5c8a4f;
+    color: white;
+    border-color: #5c8a4f;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    width: 70%;
+    max-width: 800px;
+    border-radius: 8px;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #ddd;
+    background: #5c8a4f;
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+.modal-header .close {
+    font-size: 1.8rem;
+    cursor: pointer;
+}
+
+.modal-header .close:hover {
+    color: #ddd;
+}
+
+#modalBody {
+    padding: 1.5rem;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+/* Transaction Info in Modal */
+.transaction-info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.transaction-info p {
+    margin: 0;
+}
+
+.transaction-info strong {
+    color: #555;
+}
+
+/* Modal Items Table */
+.modal-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+}
+
+.modal-items-table th,
+.modal-items-table td {
+    padding: 0.6rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-items-table th {
+    background: #f5f5f5;
+    font-weight: bold;
+}
+
+/* Modal Summary */
+.modal-summary {
+    text-align: right;
+    padding-top: 1rem;
+    border-top: 2px solid #ddd;
+}
+
+.summary-line {
+    margin: 0.5rem 0;
+}
+
+.summary-line.total {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #2c3e2f;
+}
+
+/* Modal Buttons */
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #ddd;
+}
+
+.modal-buttons button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#closeModalBtn {
+    background: #6c757d;
+    color: white;
+}
+
+#closeModalBtn:hover {
+    background: #5a6268;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+    }
+    
+    .mainshift {
+        margin-left: 200px;
+    }
+    
+    .filter-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-group {
+        width: 100%;
+    }
+    
+    .filter-input {
+        width: 100%;
+    }
+    
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+    
+    .transaction-info {
+        grid-template-columns: 1fr;
+    }
 }
