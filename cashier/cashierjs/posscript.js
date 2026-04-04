@@ -349,7 +349,7 @@ $(function () {
     $('#confirm-checkout').on('click', function () {
         // Read guest checkbox state and customer info
         const isGuest = $('#guest-checkout').is(':checked');
-        const customerName = $('#customer-name').val().trim();
+        const customerName = isGuest ? 'Guest' : $('#customer-name').val().trim();
         const contactNumber = $('#contact-number').val().trim();
 
         // Require customer name unless guest checkout is selected
