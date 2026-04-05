@@ -16,6 +16,12 @@
         $id = $row['id'];
         $user = $row['username'];
 
+        if (isset($_POST['checkbox'])) //remember me
+            {
+                setcookie('username', $user, time() + 3600*24*7, "/");
+                setcookie('password', $pass, time() + 3600*24*7, "/");
+            }
+
         if($password === $pass){
             $_SESSION['id'] = $id;
             $_SESSION['username'] = $user;

@@ -1,3 +1,19 @@
+<?php
+
+    $username_cookie = "";
+    $password_cookie = "";
+
+    if (isset($_COOKIE['username']))
+        {
+            $username_cookie = $_COOKIE['username'];
+        }
+
+    if (isset($_COOKIE['password']))
+        {
+            $password_cookie = $_COOKIE['password'];
+        }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,19 +56,17 @@
         <div class = "user">
         <label for = "username" style="text-align: left;" > Username </label>
         <br>
-        <input type="text" id="username" name="username" placeholder="Username" required><br>
+        <input type="text" id="username" name="username" placeholder="Username" value = "<?= htmlspecialchars($username_cookie)?>" required><br>
         </div>
 
         <div class = "pass">
         <label for = "password" style="text-align: left;"> Password </label>
         <br>
-        <input type="password" id="password" name="password" placeholder="Password" required><br>
+        <input type="password" id="password" name="password" placeholder="Password" value = "<?= htmlspecialchars($password_cookie)?>" required><br>
         </div>
 
-        <div class = "rem">
             <input type = "checkbox" id="checkbox" name="checkbox">
             <label for = "checkbox"> Remember Me</label>
-        </div>
 
         <div>
         <br>

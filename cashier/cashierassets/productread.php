@@ -18,9 +18,9 @@ $category = isset($_GET['category']) ? trim($_GET['category']) : 'all';
 $query = isset($_GET['query']) ? trim($_GET['query']) : '';
 
 // Base SQL: select active products with stock, joined with their category name
-$sql = "SELECT p.*, c.name AS category_name 
-        FROM products p 
-        LEFT JOIN categories c ON p.category_id = c.id 
+$sql = "SELECT p.*, c.name AS category_name
+        FROM products p
+        LEFT JOIN categories c ON p.category_id = c.id
         WHERE p.prodStatus = 'active' AND p.stock_quantity > 0";
 $params = [];
 $types = '';
@@ -43,7 +43,7 @@ if ($query !== '') {
 $stmt = $conn->prepare($sql);
 if ($stmt === false) {
     // Output an error message if the statement could not be prepared
-    echo '<div class="product-message">Unable to load products.</div>';
+    echo '<div class="product-message"  style = "#333">Unable to load products.</div>';
     exit;
 }
 
@@ -58,7 +58,7 @@ $result = $stmt->get_result();
 
 // If no matching products are found, show a friendly message
 if ($result->num_rows === 0) {
-    echo '<div class="product-message">No products found.</div>';
+    echo '<div class="product-message" style = "color: #333">No products found.</div>';
     exit;
 }
 

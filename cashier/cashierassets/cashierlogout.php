@@ -7,6 +7,9 @@
 
 session_start();
 
+setcookie('username','',time() - 3600, "/");
+setcookie('password','',time() - 3600, "/");
+
 // Remove all session variables
 session_unset();
 
