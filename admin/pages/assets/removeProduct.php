@@ -52,10 +52,9 @@ foreach ($ids as $id) {
 
     // Archive the product row before deletion so it can be restored later.
     // The icon_filename is preserved so the image remains available after restore.
-    $archive = $conn->prepare('INSERT INTO products_archive (id, name, price, stock_quantity, category_id, prodStatus, icon_filename, archived_at, reason) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $archive = $conn->prepare('INSERT INTO products_archive (id, name, price, stock_quantity, category_id, prodStatus, icon_filename, archived_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
     $archivedAt = date('Y-m-d H:i:s');
-    $reason = 'Deleted by admin';
-    $archive->bind_param('ississsss', $row['id'], $row['name'], $row['price'], $row['stock_quantity'], $row['category_id'], $row['prodStatus'], $row['icon_filename'], $archivedAt, $reason);
+    $archive->bind_param('ississss', $row['id'], $row['name'], $row['price'], $row['stock_quantity'], $row['category_id'], $row['prodStatus'], $row['icon_filename'], $archivedAt);
 
     $conn->begin_transaction();
 

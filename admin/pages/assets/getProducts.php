@@ -45,7 +45,7 @@ if ($view === 'archive') {
 
     // Build archive SQL and apply requested sort ordering.
     // The archive view includes a restore button in the action column.
-    $archiveSql = "SELECT pa.archived_id, pa.id AS product_id, pa.name AS product_name, pa.price, pa.stock_quantity, pa.category_id, pa.prodStatus, pa.archived_at, pa.reason, c.name AS category_name
+    $archiveSql = "SELECT pa.archived_id, pa.id AS product_id, pa.name AS product_name, pa.price, pa.stock_quantity, pa.category_id, pa.prodStatus, pa.archived_at, c.name AS category_name
         FROM products_archive pa
         LEFT JOIN categories c ON pa.category_id = c.id" . $archiveSortSql;
     $archiveResult = $conn->query($archiveSql);
@@ -61,7 +61,7 @@ if ($view === 'archive') {
             . "<th>Category</th>"
             . "<th>Status</th>"
             . "<th>Archived At</th>"
-            . "<th>Reason</th>"
+
             . "<th>Action</th>"
             . "</tr>";
         while ($row = $archiveResult->fetch_assoc()) {
@@ -74,7 +74,7 @@ if ($view === 'archive') {
             echo "<td>" . htmlspecialchars($row['category_name']) . "</td>";
             echo "<td>" . htmlspecialchars($row['prodStatus']) . "</td>";
             echo "<td>" . htmlspecialchars($row['archived_at']) . "</td>";
-            echo "<td>" . htmlspecialchars($row['reason']) . "</td>";
+
             echo "<td><button type=\"button\" class=\"table-action-button restore-archive-button\" data-archive-id=\"" . $row['archived_id'] . "\">Restore</button></td>";
             echo "</tr>";
         }

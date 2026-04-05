@@ -134,11 +134,11 @@ if($_SESSION['role'] != 'admin'){
             <section class="inventory-table hidden" id="archiveSection">
                 <div id="archiveTableContent"> -->
                     <?php
-                    $archiveSql = "SELECT pa.archived_id, pa.id AS product_id, pa.name AS product_name, pa.price, pa.stock_quantity, pa.category_id, pa.prodStatus, pa.archived_at, pa.reason, c.name AS category_name
+                    $archiveSql = "SELECT pa.archived_id, pa.id AS product_id, pa.name AS product_name, pa.price, pa.stock_quantity, pa.category_id, pa.prodStatus, pa.archived_at, c.name AS category_name
                     FROM products_archive pa
                     LEFT JOIN categories c ON pa.category_id = c.id
                     ORDER BY pa.archived_at DESC";
-                    $archiveResult = $conn->query($archiveSql);
+                    $archiveResult = @$conn->query($archiveSql);
                     if ($archiveResult && $archiveResult->num_rows > 0) {
                         echo "<table border = 1>";
                         echo "<tr>
@@ -150,7 +150,6 @@ if($_SESSION['role'] != 'admin'){
                             <th>Category</th>
                             <th>Status</th>
                             <th>Archived At</th>
-                            <th>Reason</th>
                             <th>Action</th>
                         </tr>";
                         while ($row = $archiveResult->fetch_assoc()) {
@@ -163,7 +162,6 @@ if($_SESSION['role'] != 'admin'){
                             echo "<td>" . $row['category_name'] . "</td>";
                             echo "<td>" . $row['prodStatus'] . "</td>";
                             echo "<td>" . $row['archived_at'] . "</td>";
-                            echo "<td>" . $row['reason'] . "</td>";
                             echo "<td><button type=\"button\" class=\"table-action-button restore-archive-button\" data-archive-id=\"" . $row['archived_id'] . "\">Restore</button></td>";
                             echo "</tr>";
                         }
