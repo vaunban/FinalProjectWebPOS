@@ -90,10 +90,10 @@ $(document).ready(function () {
      * @param {number} totalPages  - Total number of pages available.
      * @param {number} currentPage - The currently active page number.
      */
-    function updatePagination(totalPages, currentPage) {
+    function updatePagination(totalPages, activePage) {
         let html = '';
         for (let i = 1; i <= totalPages; i++) {
-            html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+            html += `<button class="page-btn ${i === activePage ? 'active' : ''}" data-page="${i}">${i}</button>`;
         }
         $('#pagination').html(html);
 
