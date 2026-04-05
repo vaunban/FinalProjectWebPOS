@@ -339,6 +339,90 @@ $(function () {
     });
 
     /**
+     * Generates a PDF receipt using jsPDF and jsPDF-AutoTable.
+     */
+    function generateReceiptPDF(receiptNumber, customerName, paymentMethod, discountType, subtotal, discount, total, cashGiven, change) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({
+            unit: 'mm',
+            format: [80, 200]
+        });
+
+        let yPos = 10;
+
+        doc.setFontSize(14);
+        doc.setFont("arial", "bold");
+        doc.text("MERKADO", 40, yPos, { align: "center" });
+        yPos += 6;
+
+        doc.setFontSize(10);
+        doc.setFont("arial", "normal");
+        doc.text("Official Receipt", 40, yPos, { align: "center" });
+        yPos += 8;
+
+        doc.setFontSize(8);
+        doc.text(`Receipt #: ${receiptNumber}`, 5, yPos);
+        yPos += 4;
+        doc.text(`Date: ${new Date().toLocaleString()}`, 5, yPos);
+        yPos += 4;
+        doc.text(`Customer: ${customerName}`, 5, yPos);
+        yPos += 4;
+        doc.text(`Payment: ${paymentMethod}`, 5, yPos);
+        yPos += 6;
+
+        const tableData = cart.map(item => [
+            item.name,
+            item.quantity.toString(),
+            item.price.toFixed(2),
+            (item.price * item.quantity).toFixed(2)
+        ]);
+
+        doc.autoTable({
+            startY: yPos,
+            head: [['Item', 'Qty', 'Price', 'Total']],
+            body: tableData,
+            theme: 'plain',
+            styles: { fontSize: 8, cellPadding: 1 },
+            headStyles: { fontStyle: 'bold', lineWidth: 0.1, lineColor: [0, 0, 0] },
+            margin: { left: 5, right: 5 },
+            tableWidth: 70
+        });
+
+        yPos = doc.lastAutoTable.finalY + 5;
+
+        doc.setFont("arial", "normal");
+        doc.text(`Subtotal:`, 40, yPos);
+        doc.text('PHP ' + subtotal.toFixed(2), 75, yPos, { align: "right" });
+        yPos += 4;
+
+        if (discount > 0) {
+            doc.text(`Discount (${discountType}):`, 40, yPos);
+            doc.text(`-PHP ` + discount.toFixed(2), 75, yPos, { align: "right" });
+            yPos += 4;
+        }
+
+        doc.setFont("arial", "bold");
+        doc.text(`Total:`, 40, yPos);
+        doc.text('PHP ' + total.toFixed(2), 75, yPos, { align: "right" });
+        yPos += 4;
+        doc.setFont("arial", "normal");
+
+        if (paymentMethod === 'Cash') {
+            doc.text(`Cash Given:`, 40, yPos);
+            doc.text('PHP ' + cashGiven.toFixed(2), 75, yPos, { align: "right" });
+            yPos += 4;
+
+            doc.text(`Change:`, 40, yPos);
+            doc.text('PHP ' + change.toFixed(2), 75, yPos, { align: "right" });
+            yPos += 6;
+        }
+
+        doc.text("Thank you for shopping!", 40, yPos, { align: "center" });
+
+        doc.save(`Receipt_${receiptNumber}.pdf`);
+    }
+
+    /**
      * Event handler: Processes the transaction when the "Confirm Payment" button is clicked.
      * Validates cash input for Cash payments (must be a positive number >= total).
      * Sends cart data, payment method, discount type, and cash given to the server via AJAX POST.
@@ -390,15 +474,33 @@ $(function () {
             },
             success(response) {
                 if (response.success) {
+                    let change = 0;
+                    if (paymentMethod === 'Cash') {
+                        change = cashGiven - total;
+                    }
+
+                    // Generate the PDF receipt before clearing the cart
+                    generateReceiptPDF(
+                        response.receipt_number,
+                        customerName,
+                        paymentMethod,
+                        discountType,
+                        subtotal,
+                        discount,
+                        total,
+                        cashGiven,
+                        change
+                    );
+
                     cart.length = 0;
                     updateCartDisplay();
                     loadProducts(activeCategory, currentSearch);
                     $('#checkout-modal').addClass('hidden');
                     $('#cash-given').val('');
+
                     let message = 'Transaction completed successfully. Receipt: ' + response.receipt_number;
                     if (paymentMethod === 'Cash') {
-                        const change = (cashGiven - total).toFixed(2);
-                        message += ' Change due: ₱' + change;
+                        message += ' Change due: ₱' + change.toFixed(2);
                     }
                     showPopup(message, true);
                 } else {

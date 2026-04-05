@@ -30,6 +30,9 @@ if(!isset($_SESSION['username']) || !isset($_SESSION['id'])){
     <link rel="stylesheet" href="cashiercss/posstyle.css">
     <!-- jQuery library for DOM manipulation and AJAX -->
     <script src="../jquery-4.0.0.min.js"></script>
+    <!-- jsPDF and jsPDF-AutoTable for receipt generation -->
+    <script src="cashierjs/jspdf.umd.min.js"></script>
+    <script src="cashierjs/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
