@@ -95,7 +95,7 @@ if($_SESSION['role'] != 'admin'){
                 } elseif(!empty($roleFilter)){
                     $stmt->bind_param("s", $roleFilter);
                 }
-
+.
                 $stmt->execute();
                 $result = $stmt->get_result();
 
