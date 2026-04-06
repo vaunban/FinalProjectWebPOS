@@ -10,7 +10,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
     if(empty($username) || empty($role) || empty($password)) {
         echo "All fields are required.";
-        exit();.
+        exit();
     }
 
     $stmt = $conn->prepare("UPDATE users SET username = ?, password = ?, role = ? WHERE id = ?");
