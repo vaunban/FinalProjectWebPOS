@@ -56,21 +56,23 @@
         <div class = "user">
         <label for = "username" style="text-align: left;" > Username </label>
         <br>
-        <input type="text" id="username" name="username" placeholder="Username" value = "<?= htmlspecialchars($username_cookie)?>" required><br>
+        <input class = "textbox" type="text" id="username" name="username" placeholder="username" value = "<?= htmlspecialchars($username_cookie)?>" required><br>
         </div>
 
         <div class = "pass">
         <label for = "password" style="text-align: left;"> Password </label>
         <br>
-        <input type="password" id="password" name="password" placeholder="Password" value = "<?= htmlspecialchars($password_cookie)?>" required><br>
+        <input class = "textbox" type="password" id="password" name="password" placeholder="password" value = "<?= htmlspecialchars($password_cookie)?>" required><br>
         </div>
 
+        <div class = "remember">
             <input type = "checkbox" id="checkbox" name="checkbox">
-            <label for = "checkbox"> Remember Me</label>
+            <label for = "checkbox"> Remember Me </label>
+        </div>
 
         <div>
         <br>
-        <input type="submit" value="Login">
+        <input class="loginbut" type="submit" value="Login">
         </div>
 
     </form>
