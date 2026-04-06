@@ -50,6 +50,7 @@ if($_SESSION['role'] != 'admin'){
                             <option value="" hidden selected>Filter: Role</option>
                             <option value="admin">Admin</option>
                             <option value="cashier">Cashier</option>
+                            <option value="superadmin">Super Admin</option>
                         </select>
                     </form>
 
@@ -131,6 +132,9 @@ if($_SESSION['role'] != 'admin'){
                         
                         <label for="edit_username">Username</label>
                         <input type="text" id="edit_username" name="username" required>
+
+                        <label for="edit_password">Password</label>
+                        <input type="password" name="password" id="password" required>
 
                         <label for="edit_role">Role</label>
                         <select id="edit_role" name="role" required>

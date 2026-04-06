@@ -4,16 +4,17 @@ include("../../../connect.php");
 
 if($_SERVER["REQUEST_METHOD"] == "POST"){
     $user_id = $_POST['user_id'];
-    $username = trim($_POST['username']);
+    $username = ($_POST['username']);
+    $password = ($_POST['password']);
     $role = $_POST['role'];
 
-    if(empty($username) || empty($role)) {
+    if(empty($username) || empty($role) || empty($password)) {
         echo "All fields are required.";
         exit();
     }
 
-    $stmt = $conn->prepare("UPDATE users SET username = ?, role = ? WHERE id = ?");
-    $stmt->bind_param("ssi", $username, $role, $user_id);   
+    $stmt = $conn->prepare("UPDATE users SET username = ?, password = ?, role = ? WHERE id = ?");
+    $stmt->bind_param("sssi", $username, $password, $role, $user_id);   
 
     if ($stmt->execute()) {
         $_SESSION['success'] = "User updated successfully!";
