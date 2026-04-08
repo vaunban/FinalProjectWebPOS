@@ -48,10 +48,9 @@ if(!isset($_SESSION['username']) || !isset($_SESSION['id'])){
         <!-- Left panel: product search, category filters, and product grid -->
         <section class="left-panel">
 
-            <!-- Search form — submitted via JS to filter products by keyword -->
+            <!-- Search form — filters products by keyword via live JS search -->
             <form class="search-form" action="#" method="GET">
                 <input type="text" name="query" placeholder="Search items..." aria-label="Search items" autocomplete="off">
-                <button type="submit">Search</button>
             </form>
             
             <!-- Category filter buttons — "All" is active by default -->

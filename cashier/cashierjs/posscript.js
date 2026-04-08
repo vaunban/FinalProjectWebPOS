@@ -236,6 +236,15 @@ $(function () {
     });
 
     /**
+     * Event handler: Live product search.
+     * Triggers loadProducts() whenever the user types in the search box.
+     */
+    $('.search-form input[name="query"]').on('input', function () {
+        const query = $(this).val().trim();
+        loadProducts(activeCategory, query);
+    });
+
+    /**
      * Event handler: Opens the checkout modal when the "Proceed to Checkout" button is clicked.
      * Validates that the cart is not empty, refreshes the totals based on the selected discount,
      * renders a summary of cart items in the modal, and resets the cash input field.
