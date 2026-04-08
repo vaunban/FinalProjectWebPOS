@@ -420,6 +420,7 @@ $(function() {
             $('#overviewTitle').text('Product Archive');
             $('#overviewDesc').text('View previously deleted products stored in the archive.');
             clearSelection();
+            loadProducts('archive');
             return;
         }
         
@@ -430,6 +431,7 @@ $(function() {
             $('#overviewTitle').text('Category Inventory');
             $('#overviewDesc').text('Manage your product categories.');
             clearSelection();
+            loadCategories('categories');
             return;
         }
         
@@ -439,6 +441,7 @@ $(function() {
             $('#overviewTitle').text('Category Archive');
             $('#overviewDesc').text('View previously deleted categories stored in the archive.');
             clearSelection();
+            loadCategories('archive');
             return;
         }
 
@@ -450,6 +453,7 @@ $(function() {
         $('#overviewTitle').text('Stock Overview');
         $('#overviewDesc').text('Review all product quantities and statuses. Use the buttons above to update stock or add new items.');
         clearSelection();
+        loadProducts('inventory');
     };
 
     $inventoryTab.on('click', () => switchTab('inventory'));
