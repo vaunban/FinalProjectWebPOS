@@ -52,6 +52,9 @@ if($_SESSION['role'] != 'admin'){
                             <option value="cashier">Cashier</option>
                             <option value="superadmin">Super Admin</option>
                         </select>
+
+                        <button class="reset-btn" type="button" onclick="clearFilters()">Reset</button>
+
                     </form>
 
                     <div class="add-user-container">
@@ -255,6 +258,15 @@ if($_SESSION['role'] != 'admin'){
                     window.location.href = `assets/deleteaccount.php?id=${userIdToDelete}`;
                 }
             }
+        </script>
+
+
+        <script>
+        function clearFilters() {
+            document.getElementById('name').value = '';
+            document.querySelector('select[name="role"]').value = '';
+            window.location.href = 'accounts.php';
+        }
         </script>
 
 </body>
