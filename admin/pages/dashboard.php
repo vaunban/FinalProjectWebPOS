@@ -144,6 +144,7 @@ $conn->close();
         </div>
     </div>
 
+    <script src="../../jquery-4.0.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script/dashboardscript.js"></script>
 </body>
