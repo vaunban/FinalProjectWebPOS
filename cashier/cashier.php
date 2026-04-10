@@ -38,7 +38,11 @@ if(!isset($_SESSION['username']) || !isset($_SESSION['id'])){
 
     <!-- Top navigation bar with branding and logout link -->
     <nav class="navbar">
-        <div class="logo">MERKADO</div>
+        <div class="logo">
+            <img src="image/merkado-icon.png" alt="MERKADO logo">
+            <span>MERKADO</span>
+        </div>
+        
         <div class="navbaritems">
             <a href="cashierassets/cashierlogout.php" class="nav-link">Logout</a>
         </div>

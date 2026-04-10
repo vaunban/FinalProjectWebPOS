@@ -25,6 +25,7 @@ if($_SESSION['role'] != 'admin'){
  
         <div class="sidebar">
             <div class="sidebar-header">
+                <img src="../images/merkado-icon.png" alt="MERKADO logo">
                 <h2><a href="../admin.php">MERKADO</a></h2>
             </div>
                 <ul class="sidebar-links">
@@ -268,6 +269,6 @@ if($_SESSION['role'] != 'admin'){
             window.location.href = 'accounts.php';
         }
         </script>
-
+        <script src="../../lowStockAlert.js"></script>
 </body>
 </html>

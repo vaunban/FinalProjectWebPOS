@@ -35,6 +35,7 @@ $conn->close();
 <body>
     <div class="sidebar">
         <div class="sidebar-header">
+            <img src="../images/merkado-icon.png" alt="MERKADO logo">
             <h2><a href="../admin.php">MERKADO</a></h2>
         </div>
         <ul class="sidebar-links">
@@ -144,7 +145,9 @@ $conn->close();
         </div>
     </div>
 
+    <script src="../../jquery-4.0.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script/dashboardscript.js"></script>
+    <script src="../../lowStockAlert.js"></script>
 </body>
 </html>
