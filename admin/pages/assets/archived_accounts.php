@@ -18,22 +18,22 @@ if($_SESSION['role'] != 'admin'){
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account</title>
-    <link rel="stylesheet" href="css/accountsstyle.css">
+    <title>Archived Accounts</title>
+    <link rel="stylesheet" href="../css/accountsstyle.css">
 </head>
 <body>
  
         <div class="sidebar">
             <div class="sidebar-header">
-                <img src="../images/merkado-icon.png" alt="MERKADO logo">
+                <img src="../../images/merkado-icon.png" alt="MERKADO logo">
                 <h2><a href="../admin.php">MERKADO</a></h2>
             </div>
                 <ul class="sidebar-links">
-                    <li><a href="dashboard.php">Dashboard</a></li>
-                    <li><a href="inventory.php">Inventory</a></li>
-                    <li><a href="transactions.php">Transactions</a></li>
-                    <li><a href="accounts.php">Accounts</a></li>
-                    <li><a href="assets/adminlogout.php">Log Out</a></li>
+                    <li><a href="../dashboard.php">Dashboard</a></li>
+                    <li><a href="../inventory.php">Inventory</a></li>
+                    <li><a href="../transactions.php">Transactions</a></li>
+                    <li><a href="../accounts.php">Accounts</a></li>
+                    <li><a href="../assets/adminlogout.php">Log Out</a></li>
                 </ul>
         </div>
 
@@ -57,9 +57,8 @@ if($_SESSION['role'] != 'admin'){
 
                     </form>
 
-                    <div class="add-user-container">
-                        <button type="button" class="archive-btn" onclick="window.location.href='assets/archived_accounts.php'">Archived</button>
-                        <button type="button" class="add-user-btn" onclick="openModal()">+ Add User</button>
+                    <div class="back-container">
+                        <button type="button" class="back-btn" onclick="window.location.href='../accounts.php'">Go Back</button>
                     </div>
                 </div>
             </header>
@@ -69,16 +68,17 @@ if($_SESSION['role'] != 'admin'){
                     <th> USER ID </th>
                     <th> USERNAME </th>
                     <th> ROLE </th>
+                    <th> ARCHIVED AT </th>
                     <th> ACTIONS </th>
                 </tr>
 
                 <?php
-                include (__DIR__ . '/../..//connect.php');
+                include (__DIR__ . '/../../../connect.php');
 
                 $search = isset($_GET['search']) ? $_GET['search'] : '';
                 $roleFilter = isset($_GET['role']) ? $_GET['role'] : '';
                 
-                $sql = "SELECT * FROM users WHERE 1=1";
+                $sql = "SELECT * FROM accounts_archive WHERE 1=1";
 
                 if(!empty($search)){
                     $sql .= " AND username LIKE ?";
@@ -108,7 +108,8 @@ if($_SESSION['role'] != 'admin'){
                     echo "<td>" . $row['id'] . "</td>";
                     echo "<td>" . $row['username'] . "</td>";
                     echo "<td>" . $row['role'] . "</td>";
-                    echo "<td> <button class='action-edit' onclick='openEditModal(".$row['id'].", \"".$row['username']."\", \"".$row['role']."\")'>Edit</button>"."<button class='action-delete' onclick='confirmDelete(".$row['id'].")'>Archive</button></td>";
+                    echo "<td>" . $row['archived_at'] . "</td>";
+                    echo "<td> <button class='action-restore' onclick='restoreUser(".$row['id'].")'>Restore</button>"."<button class='action-delete' onclick='confirmDelete(".$row['id'].")'>Delete</button></td>";
                     echo "</tr>";
                 }
                 ?>
@@ -120,71 +121,25 @@ if($_SESSION['role'] != 'admin'){
             <div id="deleteModal" class="modal">
                 <div class="modal-content">
                     <button class="close-btn" onclick="closeDeleteModal()">&times;</button>
-                    <h3>Confirm Archive</h3>
-                    <p>Are you sure you want to archive this user?</p>
+                    <h3>Confirm Delete</h3>
+                    <p>Are you sure you want to delete this user?</p>
                     <button class="cancel-btn" onclick="closeDeleteModal()">Cancel</button>
-                    <button class="delete-btn" onclick="confirmDeleteAction()">Archive</button>
+                    <button class="delete-btn" onclick="confirmDeleteAction()">Delete</button>
                 </div>
             </div>
 
-            <!-- edit user modal -->
-            <div id="editUserModal" class="modal">
+            <!-- restore confirmation -->
+            <div id="restoreModal" class="modal">
                 <div class="modal-content">
-                    <button class="close-btn" onclick="closeEditModal()">&times;</button>
-                    <h3>Edit User</h3>
-                    <form action="assets/editaccount.php" method="POST">
-                        <input type="hidden" id="edit_user_id" name="user_id">
-                        
-                        <label for="edit_username">Username</label>
-                        <input type="text" id="edit_username" name="username" required>
-
-                        <label for="edit_password">Password</label>
-                        <input type="password" name="password" id="password" required>
-
-                        <label for="edit_role">Role</label>
-                        <select id="edit_role" name="role" required>
-                            <option value="" disabled selected>Select Role</option>
-                            <option value="admin">Admin</option>
-                            <option value="cashier">Cashier</option>
-                        </select>
-                        <div>
-                            <button type="button" class="cancel-btn" onclick="closeEditModal()">Cancel</button>
-                            <button type="submit" class="add-btn">Update User</button>
-                        </div>
-                    </form>
+                    <button class="close-btn" onclick="closeRestoreModal()">&times;</button>
+                    <h3>Confirm Restore</h3>
+                    <p>Are you sure you want to restore this user?</p>
+                    <button class="cancel-btn" onclick="closeRestoreModal()">Cancel</button>
+                    <button class="restore-btn" onclick="confirmRestoreAction()">Restore</button>
                 </div>
-            </div>
-
-            <!-- add user modal -->
-            <div id="addUserModal" class="modal">
-                <div class="modal-content">
-                    <button class="close-btn" onclick="closeModal()">&times;</button>
-                    <h3>Add New User</h3>
-                    <form action="assets/accountinsert.php" method="POST">
-                        <label for="username">Username</label>
-                        <input type="text" id="username" name="username" required>
-
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" required>
-
-                        <label for="role">Role</label>
-                        <select id="role" name="role" required>
-                            <option value="" disabled selected>Select Role</option>
-                            <option value="admin">Admin</option>
-                            <option value="cashier">Cashier</option>
-                        </select>
-                        <div>
-                            <button type="button" class="cancel-btn" onclick="closeModal()">Cancel</button>
-                            <button type="submit" class="add-btn">Add User</button>
-                        </div>
-                    </form>
-                </div>
-
             </div>
 
         </main>
-
-        <!-- Popup Alerts -->
         <?php
             $popupMessage = "";
             $popupType = "";
@@ -213,7 +168,8 @@ if($_SESSION['role'] != 'admin'){
         <?php endif; ?>
 
         <!-- Popup Scripts -->
-         <script>
+
+        <script>
             function openModal() {
                 document.getElementById('addUserModal').style.display = 'block';
             }
@@ -224,19 +180,6 @@ if($_SESSION['role'] != 'admin'){
 
             function closePopup() {
                 document.getElementById('alertPopup').style.display = 'none';
-            }
-        </script>
-
-        <script>
-            function openEditModal(userId, username, role) {
-                document.getElementById('edit_user_id').value = userId;
-                document.getElementById('edit_username').value = username;
-                document.getElementById('edit_role').value = role;
-                document.getElementById('editUserModal').style.display = 'block';
-            }
-
-            function closeEditModal() {
-                document.getElementById('editUserModal').style.display = 'none';
             }
         </script>
 
@@ -255,19 +198,29 @@ if($_SESSION['role'] != 'admin'){
 
             function confirmDeleteAction() {
                 if (userIdToDelete) {
-                    window.location.href = `assets/accounts_archive.php?id=${userIdToDelete}`;
+                    window.location.href = `accountdelete.php?id=${userIdToDelete}`;
                 }
             }
         </script>
 
-
         <script>
-        function clearFilters() {
-            document.getElementById('name').value = '';
-            document.querySelector('select[name="role"]').value = '';
-            window.location.href = 'accounts.php';
-        }
+            let userIdToRestore = null;
+
+            function restoreUser(userId) {
+                userIdToRestore = userId;
+                document.getElementById('restoreModal').style.display = 'block';
+            }
+
+            function closeRestoreModal() {
+                userIdToRestore = null;
+                document.getElementById('restoreModal').style.display = 'none';
+            }
+
+            function confirmRestoreAction() {
+                if (userIdToRestore) {
+                    window.location.href = `restoreaccount.php?id=${userIdToRestore}`;
+                }
+            }
         </script>
-        <script src="../../lowStockAlert.js"></script>
 </body>
 </html>

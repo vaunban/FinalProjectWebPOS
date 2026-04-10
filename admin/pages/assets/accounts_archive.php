@@ -5,7 +5,7 @@ include("../../../connect.php");
 if(isset($_GET['id'])){
     $user_id = $_GET['id'];
 
-    // 1. Fetch the user data first
+    // Fetch the user data first
     $stmt = $conn->prepare("SELECT id, username, password, role FROM users WHERE id = ?");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
@@ -20,14 +20,14 @@ if(isset($_GET['id'])){
     $user = $result->fetch_assoc();
     $stmt->close();
 
-    // 2. Insert into accounts_archived
+    // Insert into accounts_archived
     $stmt = $conn->prepare("INSERT INTO accounts_archive (id, username, password, role, archived_at) VALUES (?, ?, ?, ?, NOW())");
     $stmt->bind_param("isss", $user['id'], $user['username'], $user['password'], $user['role']);
     
     if($stmt->execute()){
         $stmt->close();
 
-        // 3. Delete from users table
+        // Delete from users table
         $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
         $stmt->bind_param("i", $user_id);
 
