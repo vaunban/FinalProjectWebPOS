@@ -51,7 +51,6 @@ if($_SESSION['role'] != 'admin'){
                             <option value="" hidden selected>Filter: Role</option>
                             <option value="admin">Admin</option>
                             <option value="cashier">Cashier</option>
-                            <option value="superadmin">Super Admin</option>
                         </select>
 
                         <button class="reset-btn" type="button" onclick="clearFilters()">Reset</button>
@@ -77,7 +76,7 @@ if($_SESSION['role'] != 'admin'){
 
                 $search = isset($_GET['search']) ? $_GET['search'] : '';
                 $roleFilter = isset($_GET['role']) ? $_GET['role'] : '';
-
+                
                 $sql = "SELECT * FROM users WHERE 1=1";
 
                 if(!empty($search)){
@@ -119,6 +118,7 @@ if($_SESSION['role'] != 'admin'){
             <!-- delete confirmation -->
             <div id="deleteModal" class="modal">
                 <div class="modal-content">
+                    <button class="close-btn" onclick="closeDeleteModal()">&times;</button>
                     <h3>Confirm Delete</h3>
                     <p>Are you sure you want to delete this user?</p>
                     <button class="cancel-btn" onclick="closeDeleteModal()">Cancel</button>
@@ -145,7 +145,6 @@ if($_SESSION['role'] != 'admin'){
                             <option value="" disabled selected>Select Role</option>
                             <option value="admin">Admin</option>
                             <option value="cashier">Cashier</option>
-                            <option value="superadmin">Super Admin</option>
                         </select>
                         <div>
                             <button type="button" class="cancel-btn" onclick="closeEditModal()">Cancel</button>
@@ -172,7 +171,6 @@ if($_SESSION['role'] != 'admin'){
                             <option value="" disabled selected>Select Role</option>
                             <option value="admin">Admin</option>
                             <option value="cashier">Cashier</option>
-                            <option value="superadmin">Super Admin</option>
                         </select>
                         <div>
                             <button type="button" class="cancel-btn" onclick="closeModal()">Cancel</button>

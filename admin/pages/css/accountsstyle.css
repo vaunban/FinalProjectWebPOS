@@ -487,6 +487,20 @@ body {
     background-color: #4a6f3a;
 }
 
+.delete-btn {
+    color: #d42828;
+    background-color: rgba(212, 40, 40, 0.15);
+    padding: 10px;
+    border: 1px solid #d42828;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.delete-btn:hover {
+    background-color: rgba(165, 21, 21, 0.495);
+}
+
 /* Popup Alert */
 .popup-overlay {
     position: fixed;
