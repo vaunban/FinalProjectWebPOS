@@ -10,7 +10,7 @@
  */
 
 // Include the database connection
-include("../connect.php");
+include("../../connect.php");
 
 // Query all available categories from the categories table
 $sql = "SELECT * FROM categories";

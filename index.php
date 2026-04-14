@@ -1,33 +1,32 @@
 <?php
 
-    $username_cookie = "";
-    $password_cookie = "";
+$username_cookie = "";
+$password_cookie = "";
 
-    if (isset($_COOKIE['username']))
-        {
-            $username_cookie = $_COOKIE['username'];
-        }
+if (isset($_COOKIE['username'])) {
+    $username_cookie = $_COOKIE['username'];
+}
 
-    if (isset($_COOKIE['password']))
-        {
-            $password_cookie = $_COOKIE['password'];
-        }
+if (isset($_COOKIE['password'])) {
+    $password_cookie = $_COOKIE['password'];
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
     <script src="jquery-4.0.0.min.js"></script>
     <link rel="stylesheet" href="loginstyle.css">
 
 </head>
+
 <body>
-    <div class = "welc">
-    <h4> welcome to </h4>
-    <h2> merkado </h2>
+    <div class="welc">
+        <h4> welcome to </h4>
+        <h2> merkado </h2>
     </div>
 
     <?php
@@ -43,39 +42,42 @@
     }
     ?>
 
-    <div class = "main">
-    <h1 style="font-style: italic; color: brown;"> Login! </h1>
+    <div class="main">
+        <h1 style="font-style: italic; color: brown;"> Login! </h1>
 
-    <?php if ($error_message): ?>
-        <div style="color: red; margin-bottom: 8px; font-weight: bold;">
-            <?= htmlspecialchars($error_message) ?>
-        </div>
-    <?php endif; ?>
+        <?php if ($error_message): ?>
+            <div style="color: red; margin-bottom: 8px; font-weight: bold;">
+                <?= htmlspecialchars($error_message) ?>
+            </div>
+        <?php endif; ?>
 
-    <form action="login.php" method="post">
-        <div class = "user">
-        <label for = "username" style="text-align: left;" > Username </label>
-        <br>
-        <input class = "textbox" type="text" id="username" name="username" placeholder="username" value = "<?= htmlspecialchars($username_cookie)?>" required><br>
-        </div>
+        <form action="login.php" method="post">
+            <div class="user">
+                <label for="username" style="text-align: left;"> Username </label>
+                <br>
+                <input class="textbox" type="text" id="username" name="username" placeholder="username"
+                    value="<?= htmlspecialchars($username_cookie) ?>" required><br>
+            </div>
 
-        <div class = "pass">
-        <label for = "password" style="text-align: left;"> Password </label>
-        <br>
-        <input class = "textbox" type="password" id="password" name="password" placeholder="password" value = "<?= htmlspecialchars($password_cookie)?>" required><br>
-        </div>
+            <div class="pass">
+                <label for="password" style="text-align: left;"> Password </label>
+                <br>
+                <input class="textbox" type="password" id="password" name="password" placeholder="password"
+                    value="<?= htmlspecialchars($password_cookie) ?>" required><br>
+            </div>
 
-        <div class = "remember">
-            <input type = "checkbox" id="checkbox" name="checkbox">
-            <label for = "checkbox"> Remember Me </label>
-        </div>
+            <div class="remember">
+                <input type="checkbox" id="checkbox" name="checkbox">
+                <label for="checkbox"> Remember Me </label>
+            </div>
 
-        <div>
-        <br>
-        <input class="loginbut" type="submit" value="Login">
-        </div>
+            <div>
+                <br>
+                <input class="loginbut" type="submit" value="Login">
+            </div>
 
-    </form>
+        </form>
     </div>
 </body>
+
 </html>
