@@ -58,7 +58,8 @@ body {
 .right-panel {
     padding: 1rem;
     border-radius: 0;
-    min-height: calc(100vh - 96px);
+    height: calc(100vh - 64px);
+    box-sizing: border-box;
 }
 
 .left-panel {
@@ -69,7 +70,6 @@ body {
     color: #fff;
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 64px);
 }
 
 .left-panel .search-form {
@@ -161,12 +161,7 @@ body {
     gap: 0;
 }
 
-.left-panel,
-.right-panel {
-    padding: 1rem;
-    border-radius: 0;
-    min-height: calc(100vh - 96px);
-}
+
 
 .left-panel {
     background-image: url('../images/bg.png');
@@ -554,7 +549,6 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 0;
-    height: calc(100vh - 64px);
 }
 
 .order-panel {
