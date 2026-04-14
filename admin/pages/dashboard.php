@@ -1,12 +1,12 @@
 <?php
 session_start();
 
-if(!isset($_SESSION['username'])){
+if (!isset($_SESSION['username'])) {
     header("Location: ../index.php");
     exit();
 }
 
-if($_SESSION['role'] != 'admin'){
+if ($_SESSION['role'] != 'admin') {
     header("Location: ../../cashier/cashier.php");
     exit();
 }
@@ -26,12 +26,14 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - MERKADO Admin</title>
     <link rel="stylesheet" href="css/dashstyle.css">
 </head>
+
 <body>
     <div class="sidebar">
         <div class="sidebar-header">
@@ -67,7 +69,9 @@ $conn->close();
                 <select id="filterCashier">
                     <option value="">All Cashiers</option>
                     <?php foreach ($cashiers as $cashier): ?>
-                        <option value="<?= htmlspecialchars($cashier['id']) ?>"><?= htmlspecialchars($cashier['username']) ?></option>
+                        <option value="<?= htmlspecialchars($cashier['id']) ?>">
+                        
+                                <?= htmlspecialchars($cashier['username']) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -146,8 +150,9 @@ $conn->close();
     </div>
 
     <script src="../../jquery-4.0.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script/chart.js"></script>
     <script src="script/dashboardscript.js"></script>
     <script src="../../lowStockAlert.js"></script>
 </body>
+
 </html>
