@@ -147,8 +147,8 @@ try {
     foreach ($cart as $item) {
         $productId = intval($item['id']);
         $quantity = intval($item['quantity']);
-        // Store the line total (unit price × quantity) rather than just the unit price
-        $price = round(floatval($item['price']) * $quantity, 2);
+        // Store the unit price at the time of sale
+        $price = round(floatval($item['price']), 2);
 
         // Skip items with invalid quantity or product ID
         if ($quantity <= 0 || $productId <= 0) {
