@@ -10,21 +10,21 @@
  */
 
 // Include the database connection
-include("../../connect.php");
+include("../connect.php");
 
 // Query all available categories from the categories table
 $sql = "SELECT * FROM categories";
 $result = $conn->query($sql);
 
 // Loop through each category and output a filter button
-while($row = $result->fetch_assoc()){
-    // Use lowercase for the data attribute (used by JS filtering logic)
-    $category = strtolower($row['name']);
+while ($row = $result->fetch_assoc()) {
+  // Use lowercase for the data attribute (used by JS filtering logic)
+  $category = strtolower($row['name']);
 
-    // Capitalize the first letter for the visible button label
-    $label = ucfirst($row['name']);
+  // Capitalize the first letter for the visible button label
+  $label = ucfirst($row['name']);
 
-    echo "<button class='category-btn' data-category='$category'>
+  echo "<button class='category-btn' data-category='$category'>
             $label
           </button>";
 }
