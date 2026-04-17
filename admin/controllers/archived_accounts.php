@@ -19,7 +19,7 @@ if($_SESSION['role'] != 'admin'){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Archived Accounts</title>
-    <link rel="stylesheet" href="../css/accountsstyle.css">
+    <link rel="stylesheet" href="../views/css/accountsstyle.css">
 </head>
 <body>
  

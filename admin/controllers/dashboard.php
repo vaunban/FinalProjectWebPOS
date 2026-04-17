@@ -31,7 +31,7 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - MERKADO Admin</title>
-    <link rel="stylesheet" href="../css/dashstyle.css">
+    <link rel="stylesheet" href="../views/css/dashstyle.css">
 </head>
 
 <body>
@@ -150,8 +150,8 @@ $conn->close();
     </div>
 
     <script src="../../public/js/jquery-4.0.0.min.js"></script>
-    <script src="../js/chart.js"></script>
-    <script src="../js/dashboardscript.js"></script>
+    <script src="../views/js/chart.js"></script>
+    <script src="../views/js/dashboardscript.js"></script>
     <script src="../../public/js/lowStockAlert.js"></script>
 </body>
 

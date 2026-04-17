@@ -20,7 +20,7 @@ if($_SESSION['role'] != 'admin'){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory</title>
-    <link rel="stylesheet" href="../css/inventorystyle.css">
+    <link rel="stylesheet" href="../views/css/inventorystyle.css">
 
 </head>
 <body>
@@ -369,7 +369,7 @@ if($_SESSION['role'] != 'admin'){
     </div>
 
     <script src="../../public/js/jquery-4.0.0.min.js"></script>
-    <script src="../js/stockscript.js"></script>
+    <script src="../views/js/stockscript.js"></script>
     <script src="../../public/js/lowStockAlert.js"></script>
 </body>
 </html>

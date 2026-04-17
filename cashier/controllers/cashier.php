@@ -27,12 +27,12 @@ if(!isset($_SESSION['username']) || !isset($_SESSION['id'])){
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <!-- POS stylesheet -->
-    <link rel="stylesheet" href="../css/posstyle.css">
+    <link rel="stylesheet" href="../views/css/posstyle.css">
     <!-- jQuery library for DOM manipulation and AJAX -->
     <script src="../../public/js/jquery-4.0.0.min.js"></script>
     <!-- jsPDF and jsPDF-AutoTable for receipt generation -->
-    <script src="../js/jspdf.umd.min.js"></script>
-    <script src="../js/jspdf.plugin.autotable.min.js"></script>
+    <script src="../views/js/jspdf.umd.min.js"></script>
+    <script src="../views/js/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
@@ -173,6 +173,6 @@ if(!isset($_SESSION['username']) || !isset($_SESSION['id'])){
     <div id="popup-message" class="popup-message hidden"></div>
 
     <!-- Main POS JavaScript — cache-busted with a PHP timestamp to always load the latest version -->
-    <script src="../js/posscript.js?v=<?php echo time(); ?>"></script>
+    <script src="../views/js/posscript.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>

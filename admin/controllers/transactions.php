@@ -20,7 +20,7 @@ include(__DIR__ . "/../../config/connect.php");
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transactions - MERKADO Admin</title>
-    <link rel="stylesheet" href="../css/transactionstyle.css">
+    <link rel="stylesheet" href="../views/css/transactionstyle.css">
 </head>
 <body>
     
@@ -135,7 +135,7 @@ include(__DIR__ . "/../../config/connect.php");
     </div>
 
     <script src="../../public/js/jquery-4.0.0.min.js"></script>
-    <script src="../js/transactionscript.js"></script>
+    <script src="../views/js/transactionscript.js"></script>
     <script src="../../public/js/lowStockAlert.js"></script>
 </body>
 </html>
