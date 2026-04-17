@@ -1,11 +1,22 @@
 <?php
+/**
+ * accounts.php
+ * Admin account management page for the MERKADO POS system.
+ * Allows admins to view, search, add, edit, and archive user accounts.
+ * Includes modals for adding new users, editing existing users, and confirming archive.
+ * Only accessible to users with the 'admin' role.
+ */
+
+// Start session and verify login
 session_start();
 
+// Redirect to login if not logged in
 if(!isset($_SESSION['username'])){
     header("Location: ../../index.php");
     exit();
 }
 
+// Redirect to cashier page if user is not an admin
 if($_SESSION['role'] != 'admin'){
     header("Location: ../../cashier/controllers/cashier.php");
     exit();
@@ -19,10 +30,12 @@ if($_SESSION['role'] != 'admin'){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account</title>
+    <!-- Account management styles -->
     <link rel="stylesheet" href="../views/css/accountsstyle.css">
 </head>
 <body>
  
+        <!-- Sidebar Navigation -->
         <div class="sidebar">
             <div class="sidebar-header">
                 <img src="../images/merkado-icon.png" alt="MERKADO logo">
@@ -37,16 +50,20 @@ if($_SESSION['role'] != 'admin'){
                 </ul>
         </div>
 
+        <!-- Main Content Area -->
         <main class="mainshift">
             <header class="page-header">
                 <div class="mainshift-top-title">
                     <h1>Account Management</h1>
                 </div>
 
+                <!-- Toolbar — search, role filter, and action buttons -->
                 <div class="toolbar">
                     <form class="role-name-container" method="GET">
+                        <!-- Search by username -->
                         <input class="searchbar" type="text" id="name" name="search" placeholder="Search by Name">
 
+                        <!-- Filter by role (auto-submits on change) -->
                         <select name="role" onchange="this.form.submit()">
                             <option value="" hidden selected>Filter: Role</option>
                             <option value="admin">Admin</option>
@@ -64,6 +81,7 @@ if($_SESSION['role'] != 'admin'){
                 </div>
             </header>
 
+            <!-- Users Table — displays all active user accounts -->
             <table class="table-container">
                 <tr>
                     <th> USER ID </th>
@@ -73,11 +91,13 @@ if($_SESSION['role'] != 'admin'){
                 </tr>
 
                 <?php
+                // Connect to database and fetch users with optional search/role filters
                 include (__DIR__ . '/../../config/connect.php');
 
                 $search = isset($_GET['search']) ? $_GET['search'] : '';
                 $roleFilter = isset($_GET['role']) ? $_GET['role'] : '';
                 
+                // Build dynamic SQL query based on filters
                 $sql = "SELECT * FROM users WHERE 1=1";
 
                 if(!empty($search)){
@@ -88,6 +108,7 @@ if($_SESSION['role'] != 'admin'){
                     $sql .= " AND role = ?";
                 }
 
+                // Prepare and bind parameters based on which filters are active
                 $stmt = $conn->prepare($sql);
 
                 if(!empty($search) && !empty($roleFilter)){
@@ -100,6 +121,7 @@ if($_SESSION['role'] != 'admin'){
                     $stmt->bind_param("s", $roleFilter);
                 }
 
+                // Execute and display results
                 $stmt->execute();
                 $result = $stmt->get_result();
 
@@ -108,7 +130,7 @@ if($_SESSION['role'] != 'admin'){
                     echo "<td>" . $row['id'] . "</td>";
                     echo "<td>" . $row['username'] . "</td>";
                     echo "<td>" . $row['role'] . "</td>";
-                    echo "<td> <button class='action-edit' onclick='openEditModal(".$row['id'].", \"".$row['username']."\", \"".$row['role']."\")'>Edit</button>"."<button class='action-delete' onclick='confirmDelete(".$row['id'].")'>Archive</button></td>";
+                    echo "<td> <button class='action-edit' onclick='openEditModal(".$row['id'].", \"".$row['username']."\", \"".$row['role']."\")'> Edit</button>"."<button class='action-delete' onclick='confirmDelete(".$row['id'].")'>Archive</button></td>";
                     echo "</tr>";
                 }
                 ?>
@@ -116,7 +138,7 @@ if($_SESSION['role'] != 'admin'){
 
             </table>
             
-            <!-- delete confirmation -->
+            <!-- Archive Confirmation Modal -->
             <div id="deleteModal" class="modal">
                 <div class="modal-content">
                     <button class="close-btn" onclick="closeDeleteModal()">&times;</button>
@@ -127,7 +149,7 @@ if($_SESSION['role'] != 'admin'){
                 </div>
             </div>
 
-            <!-- edit user modal -->
+            <!-- Edit User Modal -->
             <div id="editUserModal" class="modal">
                 <div class="modal-content">
                     <button class="close-btn" onclick="closeEditModal()">&times;</button>
@@ -155,7 +177,7 @@ if($_SESSION['role'] != 'admin'){
                 </div>
             </div>
 
-            <!-- add user modal -->
+            <!-- Add New User Modal -->
             <div id="addUserModal" class="modal">
                 <div class="modal-content">
                     <button class="close-btn" onclick="closeModal()">&times;</button>
@@ -184,7 +206,7 @@ if($_SESSION['role'] != 'admin'){
 
         </main>
 
-        <!-- Popup Alerts -->
+        <!-- Popup Alert — shows success/error messages from session -->
         <?php
             $popupMessage = "";
             $popupType = "";
@@ -212,22 +234,26 @@ if($_SESSION['role'] != 'admin'){
             </div>
         <?php endif; ?>
 
-        <!-- Popup Scripts -->
+        <!-- Modal Scripts -->
          <script>
+            // Open the Add User modal
             function openModal() {
                 document.getElementById('addUserModal').style.display = 'block';
             }
 
+            // Close the Add User modal
             function closeModal() {
                 document.getElementById('addUserModal').style.display = 'none';
             }
 
+            // Close the popup alert
             function closePopup() {
                 document.getElementById('alertPopup').style.display = 'none';
             }
         </script>
 
         <script>
+            // Open the Edit User modal and pre-fill the form fields
             function openEditModal(userId, username, role) {
                 document.getElementById('edit_user_id').value = userId;
                 document.getElementById('edit_username').value = username;
@@ -235,24 +261,29 @@ if($_SESSION['role'] != 'admin'){
                 document.getElementById('editUserModal').style.display = 'block';
             }
 
+            // Close the Edit User modal
             function closeEditModal() {
                 document.getElementById('editUserModal').style.display = 'none';
             }
         </script>
 
         <script>
+            // Track the user ID to be archived
             let userIdToDelete = null;
 
+            // Open the archive confirmation modal
             function confirmDelete(userId) {
                 userIdToDelete = userId;
                 document.getElementById('deleteModal').style.display = 'block';
             }
 
+            // Close the archive confirmation modal
             function closeDeleteModal() {
                 userIdToDelete = null;
                 document.getElementById('deleteModal').style.display = 'none';
             }
 
+            // Perform the archive action — redirects to accounts_archive.php
             function confirmDeleteAction() {
                 if (userIdToDelete) {
                     window.location.href = `../models/accounts_archive.php?id=${userIdToDelete}`;
@@ -262,6 +293,7 @@ if($_SESSION['role'] != 'admin'){
 
 
         <script>
+        // Clear all search/filter inputs and reload the page
         function clearFilters() {
             document.getElementById('name').value = '';
             document.querySelector('select[name="role"]').value = '';

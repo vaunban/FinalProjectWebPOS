@@ -1,11 +1,22 @@
 <?php
+/**
+ * admin.php
+ * Admin landing/home page for the MERKADO POS system.
+ * Shows a welcome message, summary cards (total sales, transactions, etc.),
+ * low stock alerts, and sales charts.
+ * Only accessible to users with the 'admin' role.
+ */
+
+// Start session and check if user is logged in
 session_start();
 
+// Redirect to login if not logged in
 if(!isset($_SESSION['username'])){
     header("Location: ../../index.php");
     exit();
 }
 
+// Redirect to cashier page if user is not an admin
 if($_SESSION['role'] != 'admin'){
     header("Location: ../../cashier/controllers/cashier.php");
     exit();
@@ -17,9 +28,11 @@ if($_SESSION['role'] != 'admin'){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <!-- Admin home page styles -->
     <link rel="stylesheet" href="../views/css/adminsstyle.css">
 </head>
 <body>
+        <!-- Sidebar Navigation -->
         <div class="sidebar">
             <div class="sidebar-header">
                 <img src="../images/merkado-icon.png" alt="MERKADO logo">
@@ -34,12 +47,16 @@ if($_SESSION['role'] != 'admin'){
                 </ul>
         </div>
 
+        <!-- Main Content Area -->
         <div class="mainshift">
 
+        <!-- Welcome Section -->
         <div class="welcome-message">
              <h1>Welcome to<br>MERKADO,<br>ADMIN!</h1>
                 <p>here's your overview</p>
             </div>
+
+            <!-- Summary Cards — populated by JavaScript below -->
             <div class="summary-cards">
                 <div class="summary-card">
                     <h3>Total Sales</h3>
@@ -59,16 +76,20 @@ if($_SESSION['role'] != 'admin'){
                 </div>
             </div>
 
+            <!-- Low Stock Alerts List -->
             <div class="low-stock-alerts">
                 <h3>Low Stock Alerts</h3>
                 <ul></ul>
             </div>
 
+            <!-- Sales Charts -->
             <div class="chart-row">
+                <!-- Sales trend line chart -->
                 <div class="chart-card">
                     <h3>Sales Trend</h3>
                     <canvas id="salesLineChart" height="200"></canvas>
                 </div>
+                <!-- Payment method pie chart -->
                 <div class="chart-card">
                     <h3>Payment Breakdown</h3>
                     <canvas id="paymentPieChart" height="200"></canvas>
@@ -76,28 +97,35 @@ if($_SESSION['role'] != 'admin'){
             </div>
           
         </div>
+
+    <!-- Inline JavaScript for the admin home page -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Get references to the summary card elements
             const totalSalesEl = document.getElementById('totalSales');
             const totalTransactionsEl = document.getElementById('totalTransactions');
             const avgTransactionEl = document.getElementById('avgTransaction');
             const topCashierEl = document.getElementById('topCashier');
             let salesLineChart, paymentPieChart;
 
+            // Format a number as Philippine Peso currency
             function formatCurrency(value) {
                 return '₱' + Number(value).toFixed(2);
             }
 
+            // Update the summary cards with data from the server
             function updateSummary(summary) {
                 totalSalesEl.textContent = formatCurrency(summary.total_sales);
                 totalTransactionsEl.textContent = summary.total_transactions;
                 avgTransactionEl.textContent = formatCurrency(summary.avg_amount);
             }
 
+            // Show the top cashier's name in the summary card
             function renderTopCashier(cashiers) {
                 topCashierEl.textContent = cashiers[0] ? cashiers[0].cashier_name : 'N/A';
             }
 
+            // Render the sales trend line chart using Chart.js
             function renderSalesTrend(reportData) {
                 const ctx = document.getElementById('salesLineChart').getContext('2d');
                 const labels = reportData.map(item => item.date);
@@ -126,6 +154,7 @@ if($_SESSION['role'] != 'admin'){
                 });
             }
 
+            // Render the payment method breakdown pie chart
             function renderPaymentBreakdown(paymentData) {
                 const ctx = document.getElementById('paymentPieChart').getContext('2d');
                 const labels = paymentData.map(item => item.method);
@@ -160,6 +189,7 @@ if($_SESSION['role'] != 'admin'){
                 });
             }
 
+            // Fetch sales summary data from the server and update all cards and charts
             function loadSummary() {
                 fetch('../models/getSalesData.php')
                     .then(function(response) {
@@ -180,6 +210,7 @@ if($_SESSION['role'] != 'admin'){
                     });
             }
 
+            // Fetch low stock products and display them in the alerts list
             function loadLowStock() {
                 fetch('../models/getLowStock.php')
                     .then(function(response) {
@@ -205,11 +236,13 @@ if($_SESSION['role'] != 'admin'){
                     });
             }
 
+            // Load data when the page finishes loading
             loadSummary();
             loadLowStock();
          
         });
     </script>
+    <!-- External scripts -->
     <script src="../../public/js/jquery-4.0.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="../views/js/lowStockAlert.js"></script>

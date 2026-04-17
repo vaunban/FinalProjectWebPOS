@@ -1,16 +1,27 @@
 <?php
+/**
+ * restoreCategory.php
+ * Restores one or more archived categories back to the active categories table.
+ * Also restores the category_id on any products that were affected when the category was deleted.
+ * Uses database transactions for atomicity.
+ * Called via AJAX from stockscript.js.
+ */
+
 include(__DIR__ . '/../../config/connect.php');
 
+// Helper function: returns JSON response
 function respond($success, $message) {
     header('Content-Type: application/json');
     echo json_encode(['success' => $success, 'message' => $message]);
     exit;
 }
 
+// Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     respond(false, 'Invalid request method.');
 }
 
+// Get archive ID(s) to restore
 $ids = [];
 if (isset($_POST['ids']) && is_array($_POST['ids'])) {
     $ids = array_map('intval', $_POST['ids']);
@@ -27,6 +38,7 @@ $successCount = 0;
 $errors = [];
 
 foreach ($ids as $archivedId) {
+    // Fetch the archived category data
     $select = $conn->prepare('SELECT id, name FROM categories_archive WHERE archived_id = ?');
     $select->bind_param('i', $archivedId);
     $select->execute();
@@ -43,14 +55,14 @@ foreach ($ids as $archivedId) {
 
     $conn->begin_transaction();
 
-    // Insert the category back into the active categories table
+    // Step 1: Re-insert the category with its original ID
     $restore = $conn->prepare('INSERT INTO categories (id, name) VALUES (?, ?)');
     $restore->bind_param('is', $originalCatId, $catName);
 
     $newCatId = $originalCatId;
 
     if (!$restore->execute()) {
-        // If there's an ID clash, insert without ID and let AUTO_INCREMENT assign a new one
+        // If the ID is already taken, let AUTO_INCREMENT assign a new one
         $restoreNew = $conn->prepare('INSERT INTO categories (name) VALUES (?)');
         $restoreNew->bind_param('s', $catName);
         if (!$restoreNew->execute()) {
@@ -61,7 +73,8 @@ foreach ($ids as $archivedId) {
         $newCatId = $conn->insert_id;
     }
     
-    // Restore products' category_id ONLY if they haven't been given a new one manually
+    // Step 2: Restore category_id on products that had this category before deletion
+    // Only update products that haven't been manually reassigned to another category
     $updateProducts = $conn->prepare('UPDATE products SET category_id = ? WHERE archived_category_id = ? AND (category_id IS NULL OR category_id = 0)');
     $updateProducts->bind_param('ii', $newCatId, $originalCatId);
     if (!$updateProducts->execute()) {
@@ -70,12 +83,12 @@ foreach ($ids as $archivedId) {
         continue;
     }
 
-    // Clean up the archived_category_id column for any product that had it
+    // Step 3: Clean up the archived_category_id column
     $cleanProducts = $conn->prepare('UPDATE products SET archived_category_id = NULL WHERE archived_category_id = ?');
     $cleanProducts->bind_param('i', $originalCatId);
     $cleanProducts->execute();
 
-    // Delete from archive
+    // Step 4: Remove the record from the archive
     $deleteArchive = $conn->prepare('DELETE FROM categories_archive WHERE archived_id = ?');
     $deleteArchive->bind_param('i', $archivedId);
     
@@ -88,6 +101,7 @@ foreach ($ids as $archivedId) {
     }
 }
 
+// Return the result
 if ($successCount > 0 && empty($errors)) {
     respond(true, 'Category(s) restored successfully.');
 }

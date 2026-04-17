@@ -1,12 +1,22 @@
 <?php
+/**
+ * getCategories.php
+ * Returns category data as JSON with HTML table markup.
+ * Supports two views:
+ *   - 'categories' (default): active categories with edit/delete buttons
+ *   - 'archive': archived categories with restore buttons
+ * Called via AJAX from stockscript.js when switching category tabs.
+ */
+
 include(__DIR__ . '/../../config/connect.php');
 
+// Determine which view to return
 $view = $_GET['view'] ?? 'categories';
 
 $html = '';
 
 if ($view === 'archive') {
-    // Return category archive
+    // Return archived categories table
     $catArchiveSql = "SELECT archived_id, id AS category_id, name AS category_name, date FROM categories_archive ORDER BY date DESC";
     $catArchiveResult = @$conn->query($catArchiveSql);
     if ($catArchiveResult && $catArchiveResult->num_rows > 0) {
@@ -32,7 +42,7 @@ if ($view === 'archive') {
         $html .= '<div class="empty-state">No archived categories found.</div>';
     }
 } else {
-    // Return active categories
+    // Return active categories table
     $catSql = "SELECT id, name FROM categories";
     $catResult = $conn->query($catSql);
     if ($catResult && $catResult->num_rows > 0) {
@@ -58,6 +68,7 @@ if ($view === 'archive') {
     }
 }
 
+// Return the HTML as JSON
 header('Content-Type: application/json');
 echo json_encode(['success' => true, 'html' => $html]);
 exit;

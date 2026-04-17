@@ -1,4 +1,17 @@
+/**
+ * lowStockAlert.js
+ * Shows a floating popup notification in the bottom-right corner
+ * when products have low stock (less than 20 units).
+ * Automatically detects the correct API URL based on the current page path.
+ * Used on all admin pages (admin.php, dashboard.php, inventory.php, etc.).
+ */
+
 (function() {
+    /**
+     * Determines the correct URL for the getLowStock.php API
+     * based on the current page's location in the directory structure.
+     * @returns {string} The relative URL to getLowStock.php
+     */
     function getLowStockUrl() {
         const path = window.location.pathname;
         if (path.includes('/admin/controllers/')) {
@@ -13,11 +26,16 @@
         return 'admin/models/getLowStock.php';
     }
 
+    /**
+     * Injects the CSS styles for the low stock popup into the page head.
+     * Only runs once (checks for existing style element by ID).
+     */
     function createStyles() {
         if (document.getElementById('low-stock-alert-styles')) return;
         const style = document.createElement('style');
         style.id = 'low-stock-alert-styles';
         style.textContent = `
+            /* Popup container — fixed in bottom-right corner */
             .low-stock-alert-popup {
                 position: fixed;
                 bottom: 20px;
@@ -29,6 +47,7 @@
             .low-stock-alert-popup.hidden {
                 display: none;
             }
+            /* Card styling with frosted glass effect */
             .low-stock-popup-card {
                 background: rgba(255,255,255,0.98);
                 border-radius: 18px;
@@ -37,6 +56,7 @@
                 border: 1px solid rgba(116, 123, 142, 0.14);
                 backdrop-filter: blur(10px);
             }
+            /* Header with title and badge */
             .low-stock-popup-header {
                 display: flex;
                 justify-content: space-between;
@@ -49,6 +69,7 @@
                 font-weight: 700;
                 color: #24324a;
             }
+            /* Red badge showing the count of low stock items */
             .low-stock-popup-badge {
                 display: inline-flex;
                 align-items: center;
@@ -68,6 +89,7 @@
                 color: #4a5568;
                 font-size: 0.95rem;
             }
+            /* Scrollable list of low stock products */
             .low-stock-popup-list {
                 list-style: none;
                 margin: 0;
@@ -93,6 +115,7 @@
                 color: #b91c1c;
                 font-weight: 700;
             }
+            /* Close button (×) */
             .low-stock-popup-close {
                 appearance: none;
                 border: none;
@@ -113,6 +136,11 @@
         document.head.appendChild(style);
     }
 
+    /**
+     * Creates the popup DOM element and appends it to the page body.
+     * Sets up click handlers for the close button and backdrop click.
+     * @returns {HTMLElement} The popup container element
+     */
     function createPopupElement() {
         let popup = document.getElementById('low-stock-alert-popup');
         if (popup) return popup;
@@ -139,9 +167,13 @@
         `;
 
         document.body.appendChild(popup);
+
+        // Close popup when × button is clicked
         popup.querySelector('.low-stock-popup-close').addEventListener('click', function() {
             popup.classList.add('hidden');
         });
+
+        // Close popup when clicking outside the card
         popup.addEventListener('click', function(event) {
             if (event.target === popup) {
                 popup.classList.add('hidden');
@@ -150,6 +182,11 @@
         return popup;
     }
 
+    /**
+     * Populates the popup with low stock item data and makes it visible.
+     * Hides the popup if no items are provided.
+     * @param {Array} items - Array of objects with product_name and current_stock
+     */
     function showLowStockPopup(items) {
         const popup = createPopupElement();
         const listEl = popup.querySelector('.low-stock-popup-list');
@@ -160,6 +197,7 @@
             return;
         }
 
+        // Update the badge count and render the list (max 10 items)
         badgeEl.textContent = `${items.length}`;
         listEl.innerHTML = items.slice(0, 10).map(function(item) {
             return `<li><span>${item.product_name}</span><strong>${item.current_stock} left</strong></li>`;
@@ -167,6 +205,9 @@
         popup.classList.remove('hidden');
     }
 
+    /**
+     * Fetches low stock data from the server and shows the popup if items are found.
+     */
     function loadLowStockItems() {
         const url = getLowStockUrl();
         fetch(url)
@@ -186,6 +227,7 @@
             });
     }
 
+    // Initialize when the page is ready
     document.addEventListener('DOMContentLoaded', function() {
         createStyles();
         loadLowStockItems();

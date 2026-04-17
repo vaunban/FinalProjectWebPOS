@@ -1,6 +1,15 @@
 <?php
+/**
+ * addStock.php
+ * Handles adding stock quantity to an existing product.
+ * Increments the stock_quantity of a product by the specified amount.
+ * Supports both AJAX (JSON response) and regular form submissions (redirect).
+ * Called from the inventory page's Add Stock modal.
+ */
+
 include(__DIR__ . '/../../config/connect.php');
 
+// Helper function: returns JSON for AJAX or redirects for normal form submissions
 function respond($success, $message, $redirect = '../controllers/inventory.php') {
     if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
         header('Content-Type: application/json');
@@ -18,13 +27,16 @@ function respond($success, $message, $redirect = '../controllers/inventory.php')
     exit;
 }
 
+// Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     respond(false, 'Invalid request method.');
 }
 
+// Get the product ID and quantity from the form
 $id = intval($_POST['id'] ?? 0);
 $stock_quantity = intval($_POST['stock_quantity'] ?? 0);
 
+// Check if the product exists
 $checkSql = $conn->prepare('SELECT id FROM products WHERE id = ?');
 $checkSql->bind_param('i', $id);
 $checkSql->execute();
@@ -33,10 +45,12 @@ if ($checkResult->num_rows === 0) {
     respond(false, "Product ID $id does not exist.");
 }
 
+// Validate the quantity
 if ($stock_quantity < 1) {
     respond(false, 'At least 1 stock must be added.');
 }
 
+// Add the stock quantity to the existing amount
 $sql = $conn->prepare('UPDATE products SET stock_quantity = stock_quantity + ? WHERE id = ?');
 $sql->bind_param('ii', $stock_quantity, $id);
 if ($sql->execute()) {

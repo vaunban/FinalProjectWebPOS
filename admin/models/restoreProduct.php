@@ -1,19 +1,28 @@
 <?php
+/**
+ * restoreProduct.php
+ * Restores one or more archived products back to the active products table.
+ * Checks for ID conflicts before restoring, then removes the archive record.
+ * Uses database transactions for atomicity.
+ * Called via AJAX from stockscript.js.
+ */
+
 include __DIR__ . '/../../config/connect.php';
 
 header('Content-Type: application/json');
 
+// Helper function: returns JSON response
 function respond($success, $message) {
     echo json_encode(['success' => $success, 'message' => $message]);
     exit;
 }
 
-// Only allow POST requests for restoring products.
+// Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     respond(false, 'Invalid request method.');
 }
 
-// Extract archive IDs from the request body safely.
+// Get archive ID(s) to restore
 $ids = [];
 if (isset($_POST['ids']) && is_array($_POST['ids'])) {
     $ids = array_map('intval', $_POST['ids']);
@@ -30,6 +39,7 @@ $successCount = 0;
 $errors = [];
 
 foreach ($ids as $id) {
+    // Fetch the archived product data
     $select = $conn->prepare('SELECT id, name, price, stock_quantity, category_id, prodStatus, icon_filename FROM products_archive WHERE archived_id = ?');
     $select->bind_param('i', $id);
     $select->execute();
@@ -43,7 +53,7 @@ foreach ($ids as $id) {
     $row = $result->fetch_assoc();
     $productId = $row['id'];
 
-    // Prevent restoring a product if an active product with the same ID already exists.
+    // Check if a product with the same ID already exists (prevent conflicts)
     $check = $conn->prepare('SELECT id FROM products WHERE id = ?');
     $check->bind_param('i', $productId);
     $check->execute();
@@ -53,10 +63,10 @@ foreach ($ids as $id) {
         continue;
     }
 
-    // Use a transaction so insert and archive delete are atomic and the product is either fully restored or not changed.
+    // Start a transaction for atomicity
     $conn->begin_transaction();
 
-    // Restore the archived product row back to the active products table, including the saved image filename.
+    // Step 1: Re-insert the product into the active products table
     $insert = $conn->prepare('INSERT INTO products (id, name, price, stock_quantity, category_id, prodStatus, icon_filename) VALUES (?, ?, ?, ?, ?, ?, ?)');
     $insert->bind_param('ississs', $row['id'], $row['name'], $row['price'], $row['stock_quantity'], $row['category_id'], $row['prodStatus'], $row['icon_filename']);
 
@@ -66,7 +76,7 @@ foreach ($ids as $id) {
         continue;
     }
 
-    // Remove the restored entry from the archive after the product is recreated.
+    // Step 2: Remove the record from the archive table
     $delete = $conn->prepare('DELETE FROM products_archive WHERE archived_id = ?');
     $delete->bind_param('i', $id);
     if (!$delete->execute()) {
@@ -79,6 +89,7 @@ foreach ($ids as $id) {
     $successCount++;
 }
 
+// Return the result
 if ($successCount > 0 && empty($errors)) {
     respond(true, 'Product restored successfully.');
 }

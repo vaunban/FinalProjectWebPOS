@@ -1,4 +1,19 @@
+/**
+ * dashboardscript.js
+ * Admin Dashboard page JavaScript for the MERKADO system.
+ * Fetches sales report data from the server and renders it into:
+ *   - Summary cards (total sales, transactions, average, top cashier)
+ *   - Sales trend line chart (daily/weekly/monthly)
+ *   - Payment breakdown pie chart
+ *   - Top products bar chart
+ *   - Top categories bar chart
+ *   - Top cashiers ranked list
+ *
+ * Dependencies: jQuery, Chart.js (both loaded in dashboard.php)
+ */
+
 $(function () {
+    // Cache references to filter inputs and display elements
     const $fromDateInput = $('#reportFrom');
     const $toDateInput = $('#reportTo');
     const $cashierSelect = $('#filterCashier');
@@ -8,21 +23,36 @@ $(function () {
     const $totalTransactionsEl = $('#totalTransactions');
     const $avgTransactionEl = $('#avgTransaction');
     const $topCashierEl = $('#topCashier');
+
+    // Canvas elements for each chart
     const lineCanvas = $('#salesLineChart')[0];
     const pieCanvas = $('#paymentPieChart')[0];
     const topProductsCanvas = $('#topProductsChart')[0];
     const topCategoriesCanvas = $('#topCategoriesChart')[0];
     const $topCashiersList = $('#topCashiersList');
 
+    // Chart.js instances (stored so they can be destroyed before re-rendering)
     let salesLineChart;
     let paymentPieChart;
     let topProductsChart;
     let topCategoriesChart;
 
+    /**
+     * Formats a number as Philippine Peso currency.
+     * @param {number} value - The amount to format
+     * @returns {string} Formatted string like "₱1,234.56"
+     */
     function formatCurrency(value) {
         return '₱' + Number(value).toFixed(2);
     }
 
+    /**
+     * Creates or re-creates the sales trend line chart.
+     * Destroys the previous chart instance if it exists.
+     * @param {string[]} labels - X-axis labels (dates)
+     * @param {number[]} values - Y-axis values (sales totals)
+     * @param {string} period - The selected period (daily/weekly/monthly)
+     */
     function createLineChart(labels, values, period) {
         if (salesLineChart) {
             salesLineChart.destroy();
@@ -74,6 +104,11 @@ $(function () {
         });
     }
 
+    /**
+     * Creates or re-creates the payment method pie chart.
+     * @param {string[]} labels - Payment method names
+     * @param {number[]} values - Sales totals per method
+     */
     function createPieChart(labels, values) {
         if (paymentPieChart) {
             paymentPieChart.destroy();
@@ -101,6 +136,11 @@ $(function () {
         });
     }
 
+    /**
+     * Creates or re-creates the top products horizontal bar chart.
+     * @param {string[]} labels - Product names
+     * @param {number[]} values - Units sold per product
+     */
     function createTopProductsChart(labels, values) {
         if (topProductsChart) {
             topProductsChart.destroy();
@@ -147,6 +187,11 @@ $(function () {
         });
     }
 
+    /**
+     * Creates or re-creates the top categories bar chart.
+     * @param {string[]} labels - Category names
+     * @param {number[]} values - Units sold per category
+     */
     function createTopCategoriesChart(labels, values) {
         if (topCategoriesChart) {
             topCategoriesChart.destroy();
@@ -193,12 +238,20 @@ $(function () {
         });
     }
 
+    /**
+     * Updates the summary cards with the latest data.
+     * @param {Object} summary - Object with total_sales, total_transactions, avg_amount
+     */
     function updateSummary(summary) {
         $totalSalesEl.text(formatCurrency(summary.total_sales));
         $totalTransactionsEl.text(summary.total_transactions);
         $avgTransactionEl.text(formatCurrency(summary.avg_amount));
     }
 
+    /**
+     * Renders the top cashiers ranked list.
+     * @param {Array} cashiers - Array of {cashier_name, total_sales} objects
+     */
     function renderTopCashiers(cashiers) {
         if (!cashiers.length) {
             $topCashiersList.html('<li>No cashier sales found for this range.</li>');
@@ -213,6 +266,10 @@ $(function () {
         $topCashierEl.text(cashiers[0] ? cashiers[0].cashier_name : 'N/A');
     }
 
+    /**
+     * Main data loader: fetches all sales report data from the server
+     * using the current filter values and updates all charts and cards.
+     */
     function loadSalesReport() {
         $.ajax({
             url: '../models/getSalesData.php',
@@ -225,9 +282,11 @@ $(function () {
                 period: $trendPeriodSelect.val()
             },
             success: function (data) {
+                // Update summary cards
                 updateSummary(data.summary);
                 renderTopCashiers(data.top_cashiers);
 
+                // Update sales trend line chart
                 const labels = data.report_data.map(function (row) {
                     return row.date;
                 });
@@ -237,6 +296,7 @@ $(function () {
 
                 createLineChart(labels, values, $trendPeriodSelect.val());
 
+                // Update payment breakdown pie chart
                 const pieLabels = data.payment_breakdown.map(function (item) {
                     return item.method;
                 });
@@ -246,6 +306,7 @@ $(function () {
 
                 createPieChart(pieLabels, pieValues);
 
+                // Update top products bar chart
                 const productLabels = data.top_products.map(function (item) {
                     return item.product_name;
                 });
@@ -254,6 +315,7 @@ $(function () {
                 });
                 createTopProductsChart(productLabels, productValues);
 
+                // Update top categories bar chart
                 const categoryLabels = data.top_categories.map(function (item) {
                     return item.category_name;
                 });
@@ -269,13 +331,18 @@ $(function () {
         });
     }
 
+    // --- Event Handlers ---
+
+    // Reload report when Refresh button is clicked
     $refreshBtn.on('click', function () {
         loadSalesReport();
     });
 
+    // Reload report when the period dropdown changes
     $trendPeriodSelect.on('change', function () {
         loadSalesReport();
     });
 
+    // Initial load when the page is ready
     loadSalesReport();
 });

@@ -1,11 +1,21 @@
 <?php
+/**
+ * archived_accounts.php
+ * Admin archived accounts page for the MERKADO POS system.
+ * Displays archived (soft-deleted) user accounts with options to restore or permanently delete them.
+ * Only accessible to users with the 'admin' role.
+ */
+
+// Start session and verify login
 session_start();
 
+// Redirect to login if not logged in
 if(!isset($_SESSION['username'])){
     header("Location: ../../index.php");
     exit();
 }
 
+// Redirect to cashier page if user is not an admin
 if($_SESSION['role'] != 'admin'){
     header("Location: ../../cashier/controllers/cashier.php");
     exit();
@@ -19,10 +29,12 @@ if($_SESSION['role'] != 'admin'){
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Archived Accounts</title>
+    <!-- Reuses the same styles as the active accounts page -->
     <link rel="stylesheet" href="../views/css/accountsstyle.css">
 </head>
 <body>
  
+        <!-- Sidebar Navigation -->
         <div class="sidebar">
             <div class="sidebar-header">
                 <img src="../images/merkado-icon.png" alt="MERKADO logo">
@@ -37,12 +49,14 @@ if($_SESSION['role'] != 'admin'){
                 </ul>
         </div>
 
+        <!-- Main Content Area -->
         <main class="mainshift">
             <header class="page-header">
                 <div class="mainshift-top-title">
                     <h1>Account Management</h1>
                 </div>
 
+                <!-- Toolbar — search, role filter, and back button -->
                 <div class="toolbar">
                     <form class="role-name-container" method="GET">
                         <input class="searchbar" type="text" id="name" name="search" placeholder="Search by Name">
@@ -63,6 +77,7 @@ if($_SESSION['role'] != 'admin'){
                 </div>
             </header>
 
+            <!-- Archived Users Table -->
             <table class="table-container">
                 <tr>
                     <th> USER ID </th>
@@ -73,11 +88,13 @@ if($_SESSION['role'] != 'admin'){
                 </tr>
 
                 <?php
+                // Fetch archived accounts with optional search/role filters
                 include(__DIR__ . '/../../config/connect.php');
 
                 $search = isset($_GET['search']) ? $_GET['search'] : '';
                 $roleFilter = isset($_GET['role']) ? $_GET['role'] : '';
                 
+                // Build dynamic SQL query
                 $sql = "SELECT * FROM accounts_archive WHERE 1=1";
 
                 if(!empty($search)){
@@ -88,6 +105,7 @@ if($_SESSION['role'] != 'admin'){
                     $sql .= " AND role = ?";
                 }
 
+                // Prepare and bind parameters
                 $stmt = $conn->prepare($sql);
 
                 if(!empty($search) && !empty($roleFilter)){
@@ -100,6 +118,7 @@ if($_SESSION['role'] != 'admin'){
                     $stmt->bind_param("s", $roleFilter);
                 }
 
+                // Execute and display archived users
                 $stmt->execute();
                 $result = $stmt->get_result();
 
@@ -117,7 +136,7 @@ if($_SESSION['role'] != 'admin'){
 
             </table>
             
-            <!-- delete confirmation -->
+            <!-- Permanent Delete Confirmation Modal -->
             <div id="deleteModal" class="modal">
                 <div class="modal-content">
                     <button class="close-btn" onclick="closeDeleteModal()">&times;</button>
@@ -128,7 +147,7 @@ if($_SESSION['role'] != 'admin'){
                 </div>
             </div>
 
-            <!-- restore confirmation -->
+            <!-- Restore Confirmation Modal -->
             <div id="restoreModal" class="modal">
                 <div class="modal-content">
                     <button class="close-btn" onclick="closeRestoreModal()">&times;</button>
@@ -140,6 +159,8 @@ if($_SESSION['role'] != 'admin'){
             </div>
 
         </main>
+
+        <!-- Popup Alert — shows success/error messages from session -->
         <?php
             $popupMessage = "";
             $popupType = "";
@@ -167,9 +188,9 @@ if($_SESSION['role'] != 'admin'){
             </div>
         <?php endif; ?>
 
-        <!-- Popup Scripts -->
-
+        <!-- Scripts -->
         <script>
+            // Open/close add user modal (inherited from accounts page styling)
             function openModal() {
                 document.getElementById('addUserModal').style.display = 'block';
             }
@@ -178,24 +199,29 @@ if($_SESSION['role'] != 'admin'){
                 document.getElementById('addUserModal').style.display = 'none';
             }
 
+            // Close the popup alert notification
             function closePopup() {
                 document.getElementById('alertPopup').style.display = 'none';
             }
         </script>
 
         <script>
+            // Track the user ID to be permanently deleted
             let userIdToDelete = null;
 
+            // Open delete confirmation modal
             function confirmDelete(userId) {
                 userIdToDelete = userId;
                 document.getElementById('deleteModal').style.display = 'block';
             }
 
+            // Close delete confirmation modal
             function closeDeleteModal() {
                 userIdToDelete = null;
                 document.getElementById('deleteModal').style.display = 'none';
             }
 
+            // Perform permanent delete — redirects to accountdelete.php
             function confirmDeleteAction() {
                 if (userIdToDelete) {
                     window.location.href = `../models/accountdelete.php?id=${userIdToDelete}`;
@@ -204,18 +230,22 @@ if($_SESSION['role'] != 'admin'){
         </script>
 
         <script>
+            // Track the user ID to be restored
             let userIdToRestore = null;
 
+            // Open restore confirmation modal
             function restoreUser(userId) {
                 userIdToRestore = userId;
                 document.getElementById('restoreModal').style.display = 'block';
             }
 
+            // Close restore confirmation modal
             function closeRestoreModal() {
                 userIdToRestore = null;
                 document.getElementById('restoreModal').style.display = 'none';
             }
 
+            // Perform restore — redirects to restoreaccount.php
             function confirmRestoreAction() {
                 if (userIdToRestore) {
                     window.location.href = `../models/restoreaccount.php?id=${userIdToRestore}`;

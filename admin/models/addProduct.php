@@ -1,7 +1,16 @@
 <?php
+/**
+ * addProduct.php
+ * Handles adding a new product to the inventory.
+ * Validates all form fields, checks for duplicate names,
+ * handles image upload with MIME type validation,
+ * and inserts the product into the 'products' table.
+ * Supports both AJAX (JSON) and regular form submissions (redirect).
+ */
+
 include(__DIR__ . '/../../config/connect.php');
 
-// Helper to return either JSON for AJAX requests or redirect for normal form submission.
+// Helper function: returns JSON for AJAX or redirects for normal form submissions
 function respond($success, $message, $redirect = '../controllers/inventory.php') {
     if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
         header('Content-Type: application/json');
@@ -19,21 +28,23 @@ function respond($success, $message, $redirect = '../controllers/inventory.php')
     exit;
 }
 
-// Ensure this script only handles POST form submissions.
+// Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     respond(false, 'Invalid request method.');
 }
 
-// Read the required product fields from the submitted form.
+// Read form fields
 $name = trim($_POST['name'] ?? '');
 $price = intval($_POST['price'] ?? 0);
 $stock_quantity = intval($_POST['stock_quantity'] ?? 0);
 $category_id = intval($_POST['category_id'] ?? 0);
 
+// Validate product name
 if ($name === '') {
     respond(false, 'Product name is required.');
 }
 
+// Check if a product with the same name already exists
 $checkSql = $conn->prepare('SELECT name FROM products WHERE name = ?');
 $checkSql->bind_param('s', $name);
 $checkSql->execute();
@@ -42,19 +53,22 @@ if ($checkResult->num_rows === 1) {
     respond(false, "Product $name already exists.");
 }
 
+// Validate stock quantity
 if ($stock_quantity < 1) {
     respond(false, 'At least 1 stock must be added.');
 }
 
+// Validate price
 if ($price < 1) {
     respond(false, 'Price must be at least 1.');
 }
 
+// Check that an image was uploaded
 if (!isset($_FILES['product_image'])) {
     respond(false, 'No product image was uploaded.');
 }
 
-// Handle common PHP file upload errors explicitly.
+// Handle common PHP file upload errors
 $uploadError = $_FILES['product_image']['error'];
 if ($uploadError !== UPLOAD_ERR_OK) {
     $uploadErrors = [
@@ -71,25 +85,29 @@ if ($uploadError !== UPLOAD_ERR_OK) {
     respond(false, $message);
 }
 
+// Verify the uploaded file is legitimate
 $imageTmpPath = $_FILES['product_image']['tmp_name'];
 if (!is_uploaded_file($imageTmpPath)) {
     respond(false, 'Uploaded file is not valid.');
 }
 
-// Validate the uploaded file MIME type using the best available method.
+// Validate the file MIME type (only allow image files)
 $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 $imageFileType = '';
 
+// Try finfo first (most reliable method)
 if (function_exists('finfo_open')) {
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $imageFileType = finfo_file($finfo, $imageTmpPath);
     finfo_close($finfo);
 }
 
+// Fallback: mime_content_type
 if (!$imageFileType && function_exists('mime_content_type')) {
     $imageFileType = mime_content_type($imageTmpPath);
 }
 
+// Fallback: getimagesize
 if (!$imageFileType && function_exists('getimagesize')) {
     $imageInfo = getimagesize($imageTmpPath);
     if ($imageInfo) {
@@ -101,24 +119,27 @@ if (!in_array($imageFileType, $allowedTypes, true)) {
     respond(false, 'Only JPG, PNG, GIF, and WEBP images are allowed. Detected: ' . $imageFileType);
 }
 
-// Validate the original file extension as a second layer of protection.
+// Validate file extension as a second layer of protection
 $originalName = basename($_FILES['product_image']['name']);
 $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
 if (!in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'], true)) {
     respond(false, 'Only JPG, PNG, GIF, and WEBP files are allowed.');
 }
 
+// Save the image to the products image directory
 $targetDir = __DIR__ . '/../../cashier/images/products/';
 if (!is_dir($targetDir)) {
     mkdir($targetDir, 0755, true);
 }
 
+// Generate a unique filename using the original name + timestamp
 $filename = preg_replace('/[^A-Za-z0-9_-]/', '_', pathinfo($originalName, PATHINFO_FILENAME));
 $targetFile = $targetDir . $filename . '_' . time() . '.' . $extension;
 if (!move_uploaded_file($_FILES['product_image']['tmp_name'], $targetFile)) {
     respond(false, 'Unable to upload image. Please try again.');
 }
 
+// Insert the new product into the database (default status is "Inactive")
 $icon_filename = basename($targetFile);
 $sql = $conn->prepare('INSERT INTO products (name, price, stock_quantity, category_id, prodStatus, icon_filename) VALUES (?, ?, ?, ?, "Inactive", ?)');
 $sql->bind_param('siiis', $name, $price, $stock_quantity, $category_id, $icon_filename);

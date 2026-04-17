@@ -1,5 +1,12 @@
 <?php
+/**
+ * index.php
+ * Main login page for the MERKADO POS system.
+ * Displays a login form where users enter their username and password.
+ * Supports "Remember Me" via cookies and shows error messages from failed login attempts.
+ */
 
+// Check if "Remember Me" cookies exist and pre-fill the form fields
 $username_cookie = "";
 $password_cookie = "";
 
@@ -18,18 +25,22 @@ if (isset($_COOKIE['password'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- jQuery library -->
     <script src="public/js/jquery-4.0.0.min.js"></script>
+    <!-- Login page styles -->
     <link rel="stylesheet" href="public/css/loginstyle.css">
 
 </head>
 
 <body>
+    <!-- Welcome banner -->
     <div class="welc">
         <h4> welcome to </h4>
         <h2> merkado </h2>
     </div>
 
     <?php
+    // Check if there's a login error passed via the URL query string
     $error_message = '';
     if (!empty($_GET['error'])) {
         if ($_GET['error'] === 'wrong_password') {
@@ -45,13 +56,16 @@ if (isset($_COOKIE['password'])) {
     <div class="main">
         <h1 style="font-style: italic; color: brown;"> Login! </h1>
 
+        <!-- Display error message if login failed -->
         <?php if ($error_message): ?>
             <div style="color: red; margin-bottom: 8px; font-weight: bold;">
                 <?= htmlspecialchars($error_message) ?>
             </div>
         <?php endif; ?>
 
+        <!-- Login form — submits to login.php for authentication -->
         <form action="login.php" method="post">
+            <!-- Username input field -->
             <div class="user">
                 <label for="username" style="text-align: left;"> Username </label>
                 <br>
@@ -59,6 +73,7 @@ if (isset($_COOKIE['password'])) {
                     value="<?= htmlspecialchars($username_cookie) ?>" required><br>
             </div>
 
+            <!-- Password input field -->
             <div class="pass">
                 <label for="password" style="text-align: left;"> Password </label>
                 <br>
@@ -66,11 +81,13 @@ if (isset($_COOKIE['password'])) {
                     value="<?= htmlspecialchars($password_cookie) ?>" required><br>
             </div>
 
+            <!-- Remember Me checkbox — saves credentials in cookies for 7 days -->
             <div class="remember">
                 <input type="checkbox" id="checkbox" name="checkbox">
                 <label for="checkbox"> Remember Me </label>
             </div>
 
+            <!-- Submit button -->
             <div>
                 <br>
                 <input class="loginbut" type="submit" value="Login">

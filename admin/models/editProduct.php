@@ -1,8 +1,17 @@
 <?php
+/**
+ * editProduct.php
+ * Handles updating one or more products in the inventory.
+ * Supports single edit (from Edit button) and bulk edit (from selection mode).
+ * Can update name, price, stock, category, status, and product image.
+ * If a new image is uploaded, the old image is deleted from the server.
+ * Supports AJAX (JSON response) and regular form submissions (redirect).
+ */
+
 include(__DIR__ . '/../../config/connect.php');
 
+// Helper function: returns JSON for AJAX or redirects for normal form submissions
 function respond($success, $message, $redirect = '../controllers/inventory.php') {
-    // Return either JSON for AJAX or a normal redirect for form submissions.
     if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
         header('Content-Type: application/json');
         echo json_encode(['success' => $success, 'message' => $message]);
@@ -19,7 +28,7 @@ function respond($success, $message, $redirect = '../controllers/inventory.php')
     exit;
 }
 
-// Ensure we have at least one product ID for the update.
+// Validate that we have at least one product ID to update
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['ids']) || !is_array($_POST['ids']) || count($_POST['ids']) === 0) {
     respond(false, 'No product selected for update.');
 }
@@ -27,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['ids']) || !is_array(
 $ids = array_map('intval', $_POST['ids']);
 $fields = [];
 
-// Helper to bind dynamic mysqli parameters safely.
+// Helper to bind dynamic mysqli parameters safely
 function bindParams($stmt, $types, &$params) {
     $refs = [];
     foreach ($params as $key => $value) {
@@ -37,6 +46,7 @@ function bindParams($stmt, $types, &$params) {
     call_user_func_array([$stmt, 'bind_param'], $refs);
 }
 
+// Collect only the fields that were submitted (non-empty fields)
 if (isset($_POST['name']) && trim($_POST['name']) !== '') {
     $fields['name'] = trim($_POST['name']);
 }
@@ -63,6 +73,7 @@ if (isset($_POST['prodStatus']) && $_POST['prodStatus'] !== '') {
     $fields['prodStatus'] = trim($_POST['prodStatus']);
 }
 
+// Check for duplicate product name (only if name is being changed)
 if (isset($fields['name'])) {
     $placeholders = implode(',', array_fill(0, count($ids), '?'));
     $checkSql = $conn->prepare('SELECT id FROM products WHERE name = ? AND id NOT IN (' . $placeholders . ')');
@@ -75,9 +86,10 @@ if (isset($fields['name'])) {
     }
 }
 
-// If a new product image is provided, validate it and save it to the images folder.
+// Handle product image upload (if a new image was provided)
 $imageFilenames = [];
 if (isset($_FILES['product_image']) && $_FILES['product_image']['error'] !== UPLOAD_ERR_NO_FILE) {
+    // Check for upload errors
     $uploadError = $_FILES['product_image']['error'];
     if ($uploadError !== UPLOAD_ERR_OK) {
         $uploadErrors = [
@@ -92,12 +104,13 @@ if (isset($_FILES['product_image']) && $_FILES['product_image']['error'] !== UPL
         respond(false, $uploadErrors[$uploadError] ?? 'Please upload a valid product image.');
     }
 
+    // Verify the file is a legitimate upload
     $imageTmpPath = $_FILES['product_image']['tmp_name'];
     if (!is_uploaded_file($imageTmpPath)) {
         respond(false, 'Uploaded file is not valid.');
     }
 
-    // Detect MIME type using multiple methods for compatibility.
+    // Validate MIME type using multiple detection methods
     $allowedTypes = ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/webp'];
     $imageFileType = '';
     if (function_exists('finfo_open')) {
@@ -121,18 +134,20 @@ if (isset($_FILES['product_image']) && $_FILES['product_image']['error'] !== UPL
         respond(false, 'Only JPG, PNG, GIF, and WEBP images are allowed. Detected: ' . $imageFileType);
     }
 
+    // Validate file extension
     $originalName = basename($_FILES['product_image']['name']);
     $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
     if (!in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'], true)) {
         respond(false, 'Only JPG, PNG, GIF, and WEBP file extensions are allowed.');
     }
 
-    // Save the uploaded image to the product images directory.
+    // Save the uploaded image
     $targetDir = __DIR__ . '/../../cashier/images/products/';
     if (!is_dir($targetDir)) {
         mkdir($targetDir, 0755, true);
     }
 
+    // Generate unique filename — for bulk edit, create copies for each product
     $filenameBase = preg_replace('/[^A-Za-z0-9_-]/', '_', pathinfo($originalName, PATHINFO_FILENAME));
     $baseName = $filenameBase . '_' . time();
     $firstFilename = $baseName . '_1.' . $extension;
@@ -142,6 +157,7 @@ if (isset($_FILES['product_image']) && $_FILES['product_image']['error'] !== UPL
         respond(false, 'Unable to upload image. Please try again.');
     }
 
+    // For bulk updates, copy the image for each additional product
     $imageFilenames[] = $firstFilename;
     if (count($ids) > 1) {
         foreach (array_slice($ids, 1) as $index => $id) {
@@ -157,15 +173,18 @@ if (isset($_FILES['product_image']) && $_FILES['product_image']['error'] !== UPL
     $fields['icon_filename'] = true;
 }
 
+// Make sure at least one field is being updated
 if (empty($fields)) {
     respond(false, 'No update fields were submitted.');
 }
 
+// Build and execute the UPDATE query for each product
 foreach ($ids as $index => $id) {
     $updateFields = [];
     $updateValues = [];
     $updateTypes = '';
 
+    // Add each field to the dynamic UPDATE query
     if (isset($fields['name'])) {
         $updateFields[] = 'name = ?';
         $updateValues[] = $fields['name'];
@@ -196,6 +215,7 @@ foreach ($ids as $index => $id) {
         $updateValues[] = $imageFilenames[$index] ?? $imageFilenames[0];
         $updateTypes .= 's';
 
+        // Delete the old image file from the server
         $select = $conn->prepare('SELECT icon_filename FROM products WHERE id = ?');
         $select->bind_param('i', $id);
         $select->execute();
@@ -215,6 +235,7 @@ foreach ($ids as $index => $id) {
         continue;
     }
 
+    // Execute the UPDATE query
     $updateValues[] = $id;
     $updateTypes .= 'i';
     $sql = 'UPDATE products SET ' . implode(', ', $updateFields) . ' WHERE id = ?';

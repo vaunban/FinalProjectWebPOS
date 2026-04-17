@@ -1,18 +1,26 @@
 <?php
+/**
+ * getProducts.php
+ * Returns product data as JSON with HTML table markup.
+ * Supports two views:
+ *   - 'inventory' (default): active products with edit/delete buttons and sorting
+ *   - 'archive': archived products with restore buttons
+ * Called via AJAX from stockscript.js when switching tabs or applying sort.
+ */
+
 include __DIR__ . '/../../config/connect.php';
 
 header('Content-Type: application/json');
 
-// Determine whether to return inventory rows or archived rows.
-// The front-end switches between these views using AJAX tab controls.
+// Determine which view to return (inventory or archive)
 $view = isset($_GET['view']) && $_GET['view'] === 'archive' ? 'archive' : 'inventory';
 
-// Only allow the fields we know how to sort securely.
+// Only allow whitelisted sort fields to prevent SQL injection
 $allowedSortFields = ['category', 'price', 'quantity', 'status', 'name'];
 $sortField = isset($_GET['sortField']) && in_array($_GET['sortField'], $allowedSortFields, true) ? $_GET['sortField'] : '';
 $sortDirection = isset($_GET['sortDirection']) && strtolower($_GET['sortDirection']) === 'desc' ? 'DESC' : 'ASC';
 
-// Map selected sort options to SQL ordering clauses.
+// Map sort field names to actual SQL column references
 $sortSql = '';
 if ($sortField === 'category') {
     $sortSql = " ORDER BY c.name {$sortDirection}";
@@ -26,10 +34,11 @@ if ($sortField === 'category') {
     $sortSql = " ORDER BY p.name {$sortDirection}";
 }
 
-// Use output buffering so we can collect generated HTML and return it as JSON.
+// Use output buffering to collect generated HTML
 ob_start();
 
 if ($view === 'archive') {
+    // Build sort SQL for archive view (uses pa. prefix instead of p.)
     $archiveSortSql = '';
     if ($sortField === 'category') {
         $archiveSortSql = " ORDER BY c.name {$sortDirection}";
@@ -43,13 +52,13 @@ if ($view === 'archive') {
         $archiveSortSql = " ORDER BY pa.name {$sortDirection}";
     }
 
-    // Build archive SQL and apply requested sort ordering.
-    // The archive view includes a restore button in the action column.
+    // Query archived products
     $archiveSql = "SELECT pa.archived_id, pa.id AS product_id, pa.name AS product_name, pa.price, pa.stock_quantity, pa.category_id, pa.prodStatus, pa.archived_at, c.name AS category_name
         FROM products_archive pa
         LEFT JOIN categories c ON pa.category_id = c.id" . $archiveSortSql;
     $archiveResult = $conn->query($archiveSql);
 
+    // Render archive table with restore buttons
     if ($archiveResult && $archiveResult->num_rows > 0) {
         echo "<table border=\"1\">";
         echo "<tr>"
@@ -83,12 +92,13 @@ if ($view === 'archive') {
         echo "<div class=\"empty-state\">No archived products found.</div>";
     }
 } else {
-    // Build inventory SQL and apply requested sort ordering.
+    // Query active products with category names
     $sql = "SELECT p.name AS product_name,p.id,p.price,p.stock_quantity,p.prodStatus,p.category_id,c.name AS category_name
         FROM products p
         LEFT JOIN categories c ON p.category_id = c.id" . $sortSql;
     $result = $conn->query($sql);
 
+    // Render inventory table with edit/delete buttons
     if ($result && $result->num_rows > 0) {
         echo "<table border=\"1\">";
         echo "<tr>"
@@ -120,6 +130,7 @@ if ($view === 'archive') {
     }
 }
 
+// Capture the buffered HTML and return as JSON
 $html = ob_get_clean();
 
 echo json_encode(['success' => true, 'html' => $html]);

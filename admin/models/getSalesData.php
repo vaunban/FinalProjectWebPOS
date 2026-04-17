@@ -1,19 +1,31 @@
 <?php
+/**
+ * getSalesData.php
+ * Returns comprehensive sales report data as JSON for the admin dashboard.
+ * Includes: sales trend (daily/weekly/monthly), summary totals, payment breakdown,
+ * top cashiers, top products, and top categories.
+ * Supports optional filters: date range, cashier, and time period.
+ * Only accessible to authenticated admin users.
+ */
+
 session_start();
 include(__DIR__ . "/../../config/connect.php");
 
+// Check authentication
 if(!isset($_SESSION['username']) || $_SESSION['role'] != 'admin'){
     http_response_code(403);
     echo json_encode(['error' => 'Unauthorized']);
     exit();
 }
 
+// Read filter parameters from the query string
 $from_date = isset($_GET['from_date']) ? $_GET['from_date'] : '';
 $to_date = isset($_GET['to_date']) ? $_GET['to_date'] : '';
 $cashier_id = isset($_GET['cashier_id']) ? $_GET['cashier_id'] : '';
 $period = isset($_GET['period']) ? $_GET['period'] : 'daily';
 $item_id = isset($_GET['item_id']) ? $_GET['item_id'] : '';
 
+// Build dynamic WHERE clause based on filters
 $where = [];
 $params = [];
 $types = '';
@@ -36,9 +48,10 @@ if ($cashier_id) {
     $types .= 's';
 }
 
+// Default to last 14 days if no date filter is applied
 $where_clause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : 'WHERE DATE(t.created_at) >= DATE_SUB(CURDATE(), INTERVAL 13 DAY)';
 
-// Adjust grouping based on period
+// Configure date grouping based on the selected period (daily/weekly/monthly)
 switch ($period) {
     case 'weekly':
         $date_expr = "CONCAT(YEAR(t.created_at), '-W', LPAD(WEEK(t.created_at, 1), 2, '0')) AS report_date";
@@ -57,6 +70,7 @@ switch ($period) {
         break;
 }
 
+// --- Query 1: Sales trend data (for the line chart) ---
 $sales_sql = "SELECT $date_expr, COALESCE(SUM(t.total_amount), 0) AS sales_total, COUNT(*) AS transactions_count
               FROM transactions t
               $where_clause
@@ -87,6 +101,7 @@ while ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
+// --- Query 2: Summary totals (total sales, transaction count, average) ---
 $summary_sql = "SELECT COALESCE(SUM(t.total_amount), 0) AS total_sales, COUNT(*) AS total_transactions, COALESCE(AVG(t.total_amount), 0) AS avg_amount
                 FROM transactions t
                 $where_clause";
@@ -105,6 +120,7 @@ $summary_stmt->execute();
 $summary = $summary_stmt->get_result()->fetch_assoc();
 $summary_stmt->close();
 
+// --- Query 3: Payment method breakdown (for the pie chart) ---
 $payment_sql = "SELECT COALESCE(t.payment_method, 'Unknown') AS payment_method, COUNT(*) AS count, COALESCE(SUM(t.total_amount), 0) AS sales_total
                 FROM transactions t
                 $where_clause
@@ -131,6 +147,7 @@ while ($row = $payment_result->fetch_assoc()) {
 }
 $payment_stmt->close();
 
+// --- Query 4: Top cashiers by total sales ---
 $top_cashier_sql = "SELECT u.username AS cashier_name, COALESCE(SUM(t.total_amount), 0) AS total_sales
                     FROM transactions t
                     LEFT JOIN users u ON t.user_id = u.id
@@ -159,7 +176,7 @@ while ($row = $top_cashier_result->fetch_assoc()) {
 }
 $top_cashier_stmt->close();
 
-// Item sales report if item_id is provided
+// --- Query 5 (optional): Sales data for a specific product ---
 $item_report_data = [];
 $item_name = '';
 if ($item_id) {
@@ -198,7 +215,7 @@ if ($item_id) {
     }
     $item_stmt->close();
 
-    // Get item name
+    // Get the product name
     $name_sql = "SELECT name FROM products WHERE id = ?";
     $name_stmt = $conn->prepare($name_sql);
     $name_stmt->bind_param('s', $item_id);
@@ -210,7 +227,7 @@ if ($item_id) {
     $name_stmt->close();
 }
 
-// Top products by quantity
+// --- Query 6: Top products by quantity sold (for the bar chart) ---
 $top_product_sql = "SELECT p.name AS product_name, COALESCE(SUM(ti.quantity), 0) AS total_quantity
                     FROM transaction_items ti
                     JOIN transactions t ON ti.transaction_id = t.id
@@ -240,7 +257,7 @@ while ($row = $top_product_result->fetch_assoc()) {
 }
 $top_product_stmt->close();
 
-// Top categories by quantity
+// --- Query 7: Top categories by quantity sold (for the bar chart) ---
 $top_category_sql = "SELECT COALESCE(c.name, 'Uncategorized') AS category_name, COALESCE(SUM(ti.quantity), 0) AS total_quantity
                      FROM transaction_items ti
                      JOIN transactions t ON ti.transaction_id = t.id
@@ -273,6 +290,7 @@ $top_category_stmt->close();
 
 $conn->close();
 
+// Return all report data as a single JSON response
 header('Content-Type: application/json');
 echo json_encode([
     'report_data' => $report_data,

@@ -1,6 +1,16 @@
 <?php
+/**
+ * removeProduct.php
+ * Archives (soft-deletes) one or more products.
+ * Copies each product to products_archive (including image filename),
+ * then deletes the product from the active products table.
+ * Uses database transactions to ensure data consistency.
+ * Called via AJAX from stockscript.js.
+ */
+
 include(__DIR__ . '/../../config/connect.php');
 
+// Helper function: returns JSON for AJAX or redirects for normal form submissions
 function respond($success, $message, $redirect = '../controllers/inventory.php') {
     if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
         header('Content-Type: application/json');
@@ -18,10 +28,12 @@ function respond($success, $message, $redirect = '../controllers/inventory.php')
     exit;
 }
 
+// Only allow POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     respond(false, 'Invalid request method.');
 }
 
+// Get product ID(s) — supports single and bulk delete
 $ids = [];
 if (isset($_POST['ids']) && is_array($_POST['ids'])) {
     $ids = array_map('intval', $_POST['ids']);
@@ -38,6 +50,7 @@ $successCount = 0;
 $errors = [];
 
 foreach ($ids as $id) {
+    // Fetch the product data (including image filename)
     $select = $conn->prepare('SELECT id, name, price, stock_quantity, category_id, prodStatus, icon_filename FROM products WHERE id = ?');
     $select->bind_param('i', $id);
     $select->execute();
@@ -50,12 +63,12 @@ foreach ($ids as $id) {
 
     $row = $result->fetch_assoc();
 
-    // Archive the product row before deletion so it can be restored later.
-    // The icon_filename is preserved so the image remains available after restore.
+    // Step 1: Save the product to the archive table (preserves the image filename)
     $archive = $conn->prepare('INSERT INTO products_archive (id, name, price, stock_quantity, category_id, prodStatus, icon_filename, archived_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
     $archivedAt = date('Y-m-d H:i:s');
     $archive->bind_param('ississss', $row['id'], $row['name'], $row['price'], $row['stock_quantity'], $row['category_id'], $row['prodStatus'], $row['icon_filename'], $archivedAt);
 
+    // Start a transaction for atomicity
     $conn->begin_transaction();
 
     if (!$archive->execute()) {
@@ -64,7 +77,7 @@ foreach ($ids as $id) {
         continue;
     }
 
-    // Remove the product row from the active products table after successful archive.
+    // Step 2: Delete the product from the active products table
     $delete = $conn->prepare('DELETE FROM products WHERE id = ?');
     $delete->bind_param('i', $id);
     if ($delete->execute()) {
@@ -76,6 +89,7 @@ foreach ($ids as $id) {
     }
 }
 
+// Return the result
 if ($successCount > 0 && empty($errors)) {
     respond(true, 'Product(s) deleted successfully.');
 }
