@@ -1,0 +1,147 @@
+body
+{
+    height: 100vh;
+    margin: 0;
+
+    background-image: url(../images/bg.png);
+    background-size: cover;
+    background-position: center;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-family: Georgia, serif;
+}
+
+.welc
+{
+    position: absolute;
+    color:whitesmoke;
+    text-align: center;
+    top: 60px;
+
+}
+
+.welc h4
+{
+    font-size: 14px;
+    font-style: italic;
+    letter-spacing: 3px;
+    margin:0;
+}
+
+.welc h2
+{
+    font-size: 48px;
+    font-weight: bold;
+    letter-spacing: 5px;
+    margin:0;
+    margin-bottom: 30px;
+}
+
+.main
+{
+    position:relative;
+    z-index:2;
+
+    width: 480px;
+    padding:40px 35px;
+
+    background:#d8cfb0;
+    border-radius:20px;
+
+    text-align:center;
+
+    box-shadow:0 12px 35px rgba(0,0,0,0.25);
+}
+
+.main h1
+{
+    font-style:italic;
+    color:#6b3b1e;
+    margin-top:5px;
+    font-weight: lighter;
+}
+
+.user label, .pass label
+{
+    display:block;
+    text-align:left;
+    color:#6b3b1e;
+
+    font-style:italic;
+    font-weight: bold;
+    font-size:14px;
+    margin-bottom:2px;
+    margin-right: 10px;
+}
+
+.textbox::placeholder
+{
+    color: #6b3c1e8d;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+.textbox
+{
+    width: 95%;
+    padding: 12px;
+    margin: 0 auto 16px auto;
+    
+    background-color: #b6a07e;
+    border: none;
+    border-radius: 8px;
+
+    color: #6b3b1e;
+
+    font-size: 15px;
+}
+
+.user, .pass
+{
+    margin-top: 15px;
+    text-align: left;
+}
+
+.remember
+{
+    margin-top: 10px;
+    text-align: left;
+
+    font-style: italic;
+    color: #6b3b1e;
+    font-size: 15px;
+    vertical-align: middle;
+}
+
+.remember input[type="checkbox"]
+{
+    accent-color: #6b3b1e;
+    width: 18px;
+    height: 18px;
+
+    vertical-align: middle;
+}
+
+.loginbut
+{
+    width: 60%;
+    margin: 20px auto 0 auto;
+
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    background-color: #6b3b1e;
+    font-size: large;
+    color: white;
+
+    font-style: italic;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+
+}
+
+.loginbut:hover
+{
+    background-color: #8a4c2a;
+}

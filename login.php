@@ -1,6 +1,6 @@
 <?php
     session_start();
-    include("connect.php");
+    include("config/connect.php");
     $username = $_POST['username'];
     $password = $_POST['password'];
 
@@ -28,11 +28,11 @@
             $_SESSION['role'] = $role;
 
             if($role == 'admin'){
-                header("Location: admin/admin.php");
+                header("Location: admin/controllers/admin.php");
                 exit();
             }
             else if($role == 'cashier'){
-                header("Location: cashier/cashier.php");
+                header("Location: cashier/controllers/cashier.php");
                 exit();
             }
             else{

@@ -18,8 +18,8 @@ if (isset($_COOKIE['password'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="jquery-4.0.0.min.js"></script>
-    <link rel="stylesheet" href="loginstyle.css">
+    <script src="public/js/jquery-4.0.0.min.js"></script>
+    <link rel="stylesheet" href="public/css/loginstyle.css">
 
 </head>
 

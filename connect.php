@@ -1,12 +1,6 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "admin123";
-$dbname = "db45126";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Error!" . $conn->connect_error);
-}
-?>
+/**
+ * Legacy connect.php - redirects to the new config location.
+ * This file exists for backward compatibility only.
+ */
+require_once __DIR__ . '/config/connect.php';
