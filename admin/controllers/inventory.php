@@ -370,6 +370,6 @@ if($_SESSION['role'] != 'admin'){
 
     <script src="../../public/js/jquery-4.0.0.min.js"></script>
     <script src="../views/js/stockscript.js"></script>
-    <script src="../../public/js/lowStockAlert.js"></script>
+    <script src="../views/js/lowStockAlert.js"></script>
 </body>
 </html>

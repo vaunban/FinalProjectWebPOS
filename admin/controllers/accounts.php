@@ -268,6 +268,6 @@ if($_SESSION['role'] != 'admin'){
             window.location.href = 'accounts.php';
         }
         </script>
-        <script src="../../public/js/lowStockAlert.js"></script>
+        <script src="../views/js/lowStockAlert.js"></script>
 </body>
 </html>
